@@ -499,11 +499,11 @@ class RAM_WP_REST_Posts_Controller extends WP_REST_Controller {
 		{
 			$cachedata= MRAC()->cacheManager->get_cache();		
 			$post_id=(int)$request['id'];
-			$pageviews = (int) get_post_meta($post_id, 'wl_pageviews',true);	
+			$pageviews = (int) get_post_meta($post_id, 'views',true);	
 			$pageviews=$pageviews+1;      
-			if(!update_post_meta($post_id, 'wl_pageviews', $pageviews))   
+			if(!update_post_meta($post_id, 'views', $pageviews))   
 			{  
-			  add_post_meta($post_id, 'wl_pageviews', 1, true);  
+			  add_post_meta($post_id, 'views', 1, true);  
 			}      
 			if(!empty($cachedata))
 			{

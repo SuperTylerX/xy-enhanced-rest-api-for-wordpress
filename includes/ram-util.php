@@ -660,7 +660,7 @@ function  getPosts($ids)
                 $praiseWord=empty($praiseWord)?'鼓励':$praiseWord;
                 $_data['praiseWord']=$praiseWord;
                 
-                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $pageviews = (int) get_post_meta( $post_id, 'views',true);
                 $_data['pageviews'] = $pageviews;
     
                 $comment_total = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->comments." where  comment_approved = '1' and comment_post_ID=".$post_id);
@@ -749,7 +749,7 @@ function  getPosts($ids)
         $sql =$wpdb->prepare("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=%d",$post_id);
         $like_count = $wpdb->get_var($sql);
         $_data['like_count']= $like_count; 
-        $post_views = (int)get_post_meta($post_id, 'wl_pageviews', true);     
+        $post_views = (int)get_post_meta($post_id, 'views', true);     
         $params = $request->get_params();
          if ( isset( $params['id'] ) ) {
     
@@ -835,9 +835,9 @@ function  getPosts($ids)
                        
             }
           $post_views =$post_views+1;  
-          if(!update_post_meta($post_id, 'wl_pageviews', $post_views))   
+          if(!update_post_meta($post_id, 'views', $post_views))   
           {  
-            add_post_meta($post_id, 'wl_pageviews', 1, true);  
+            add_post_meta($post_id, 'views', 1, true);  
           } 
           $_data['avatarurls']= $avatarurls;
           date_default_timezone_set('Asia/Shanghai');

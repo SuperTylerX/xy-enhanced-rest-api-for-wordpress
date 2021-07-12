@@ -351,7 +351,7 @@ class RAM_REST_Posts_Controller  extends WP_REST_Controller{
                 $_data["post_date"] =$post_date; 
                 $_data["post_permalink"] =$post_permalink;
 
-                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $pageviews = (int) get_post_meta( $post_id, 'views',true);
                 $_data['pageviews'] = $pageviews;
                 
                 $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
@@ -400,7 +400,7 @@ class RAM_REST_Posts_Controller  extends WP_REST_Controller{
             $today = date("Y-m-d H:i:s"); //获取今天日期时间   
            // $fristday = date( "Y-m-d H:i:s",  strtotime(date("Y",time())."-1"."-1"));  //本年第一天;
             $fristday= date("Y-m-d H:i:s", strtotime("-1 year"));  
-            $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, CONVERT(".$wpdb->postmeta.".meta_value,SIGNED) AS 'pageviews_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE ".$wpdb->postmeta.".meta_key ='wl_pageviews' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' AND post_type='post'  AND post_password = '' ORDER  BY pageviews_total DESC LIMIT ". $limit;
+            $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, CONVERT(".$wpdb->postmeta.".meta_value,SIGNED) AS 'pageviews_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE ".$wpdb->postmeta.".meta_key ='views' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' AND post_type='post'  AND post_password = '' ORDER  BY pageviews_total DESC LIMIT ". $limit;
             $mostlikes = $wpdb->get_results($sql);
             $posts =array();
             foreach ($mostlikes as $post) {
@@ -481,7 +481,7 @@ class RAM_REST_Posts_Controller  extends WP_REST_Controller{
                 $_data["post_date"] =$post_date; 
                 $_data["post_permalink"] =$post_permalink;
                 
-                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $pageviews = (int) get_post_meta( $post_id, 'views',true);
                 $_data['pageviews'] = $pageviews;
 
                 $comment_total = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->comments." where  comment_approved = '1' and comment_post_ID=".$post_id);
@@ -531,7 +531,7 @@ class RAM_REST_Posts_Controller  extends WP_REST_Controller{
                 $_data["comment_total"] =$comment_total;  
                 $_data["post_date"] =$post_date;
                 $_data["post_permalink"] =$post_permalink;
-                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $pageviews = (int) get_post_meta( $post_id, 'views',true);
                 $_data['pageviews'] = $pageviews;
                 
                 $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
@@ -596,7 +596,7 @@ class RAM_REST_Posts_Controller  extends WP_REST_Controller{
                 $_data["post_date"] =$post_date; 
                 $_data["post_permalink"] =$post_permalink;
                 
-                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $pageviews = (int) get_post_meta( $post_id, 'views',true);
                 $_data['pageviews'] = $pageviews;
 
                 $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);

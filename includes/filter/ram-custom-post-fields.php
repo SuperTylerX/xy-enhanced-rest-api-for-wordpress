@@ -69,7 +69,7 @@ function custom_post_fields( $data, $post, $request) {
     $sql =$wpdb->prepare("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=%d",$post_id);
     $like_count = $wpdb->get_var($sql);
     $_data['like_count']= $like_count; 
-    $post_views = (int)get_post_meta($post_id, 'wl_pageviews', true);     
+    $post_views = (int)get_post_meta($post_id, 'views', true);     
     $params = $request->get_params();
      if ( isset( $params['id'] ) ) {
 
@@ -155,9 +155,9 @@ function custom_post_fields( $data, $post, $request) {
                    
         }
       $post_views =$post_views+1;  
-      if(!update_post_meta($post_id, 'wl_pageviews', $post_views))   
+      if(!update_post_meta($post_id, 'views', $post_views))   
       {  
-        add_post_meta($post_id, 'wl_pageviews', 1, true);  
+        add_post_meta($post_id, 'views', 1, true);  
       } 
       $_data['avatarurls']= $avatarurls;
       date_default_timezone_set('Asia/Shanghai');
@@ -220,7 +220,7 @@ function custom_post_fields( $data, $post, $request) {
   {  
     global $post;  
     $post_id = $post->ID;  
-    $views = (int)get_post_meta($post_id, 'wl_pageviews', true);  
+    $views = (int)get_post_meta($post_id, 'views', true);  
     if ($echo) echo $before, number_format($views), $after;  
     else return $views;  
   } 
@@ -235,10 +235,10 @@ function custom_post_fields( $data, $post, $request) {
       $post_id = $post->ID;  
       if($post_id)   
       {  
-        $post_views = (int)get_post_meta($post_id, 'wl_pageviews', true);  
-        if(!update_post_meta($post_id, 'wl_pageviews', ($post_views+1)))   
+        $post_views = (int)get_post_meta($post_id, 'views', true);  
+        if(!update_post_meta($post_id, 'views', ($post_views+1)))   
         {  
-          add_post_meta($post_id, 'wl_pageviews', 1, true);  
+          add_post_meta($post_id, 'views', 1, true);  
         }  
       }  
     }  
