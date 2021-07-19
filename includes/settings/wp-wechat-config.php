@@ -24,55 +24,57 @@ function get_jquery_source() {
 
 
 function register_weixinappsettings() {
-	// 注册设置
-	register_setting('weixinapp-group', 'wf_appid');
-	register_setting('weixinapp-group', 'wf_secret');
-	// register_setting( 'weixinapp-group', 'wf_swipe' );
+	// 微信ID和秘钥设置
+	register_setting('uniapp-group', 'wf_appid');
+	register_setting('uniapp-group', 'wf_secret');
 
-	register_setting('weixinapp-group', 'wf_mchid');
-	register_setting('weixinapp-group', 'wf_paykey');
-	register_setting('weixinapp-group', 'wf_paybody');
+	// QQ ID和秘钥设置
+	register_setting('uniapp-group', 'wf_qq_appid');
+	register_setting('uniapp-group', 'wf_qq_secret');
 
-	register_setting('weixinapp-group', 'wf_poster_imageurl');
-	register_setting('weixinapp-group', 'wf_enable_comment_option');
-	register_setting('weixinapp-group', 'wf_enable_comment_check');
+	// 商户号
+	register_setting('uniapp-group', 'wf_mchid');
+	register_setting('uniapp-group', 'wf_paykey');
+	register_setting('uniapp-group', 'wf_paybody');
 
-	register_setting('weixinapp-group', 'wf_praise_word');
-	register_setting('weixinapp-group', 'wf_enterprise_minapp');
+	register_setting('uniapp-group', 'wf_poster_imageurl');
+	register_setting('uniapp-group', 'wf_enable_comment_option');
+	register_setting('uniapp-group', 'wf_enable_comment_check');
 
-	register_setting('weixinapp-group', 'wf_list_ad');
-	register_setting('weixinapp-group', 'wf_list_ad_id');
+	register_setting('uniapp-group', 'wf_praise_word');
+	register_setting('uniapp-group', 'wf_weixin_enterprise_minapp');
+	register_setting('uniapp-group', 'wf_qq_enterprise_minapp');
 
-	register_setting('weixinapp-group', 'wf_list_ad_every');
+	register_setting('uniapp-group', 'wf_list_ad');
+	register_setting('uniapp-group', 'wf_list_ad_id');
+	register_setting('uniapp-group', 'wf_list_ad_every');
 
+	register_setting('uniapp-group', 'wf_excitation_ad_id');
+	register_setting('uniapp-group', 'wf_video_ad_id');
+	register_setting('uniapp-group', 'wf_interstitial_ad_id');
 
-	register_setting('weixinapp-group', 'wf_excitation_ad_id');
-	register_setting('weixinapp-group', 'wf_video_ad_id');
-	register_setting('weixinapp-group', 'wf_interstitial_ad_id');
+	register_setting('uniapp-group', 'wf_detail_ad');
+	register_setting('uniapp-group', 'wf_detail_ad_id');
+	register_setting('uniapp-group', 'wf_about');
+	register_setting('uniapp-group', 'wf_display_categories');
 
-	register_setting('weixinapp-group', 'wf_detail_ad');
-	register_setting('weixinapp-group', 'wf_detail_ad_id');
-	register_setting('weixinapp-group', 'wf_about');
-	register_setting('weixinapp-group', 'wf_display_categories');
+	register_setting('uniapp-group', 'wf_downloadfile_domain');
+	register_setting('uniapp-group', 'wf_business_domain');
+	register_setting('uniapp-group', 'wf_zan_imageurl');
+	register_setting('uniapp-group', 'wf_logo_imageurl');
 
-	register_setting('weixinapp-group', 'wf_downloadfile_domain');
-	register_setting('weixinapp-group', 'wf_business_domain');
-	register_setting('weixinapp-group', 'wf_zan_imageurl');
-	register_setting('weixinapp-group', 'wf_logo_imageurl');
-
-	register_setting('weixinapp-group', 'enable_index_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_detail_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_topic_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_list_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_hot_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_comments_interstitial_ad');
-	register_setting('weixinapp-group', 'enable_live_interstitial_ad');
+	register_setting('uniapp-group', 'enable_index_interstitial_ad');
+	register_setting('uniapp-group', 'enable_detail_interstitial_ad');
+	register_setting('uniapp-group', 'enable_topic_interstitial_ad');
+	register_setting('uniapp-group', 'enable_list_interstitial_ad');
+	register_setting('uniapp-group', 'enable_hot_interstitial_ad');
+	register_setting('uniapp-group', 'enable_comments_interstitial_ad');
+	register_setting('uniapp-group', 'enable_live_interstitial_ad');
 }
 
 function weixinapp_settings_page() {
 	?>
     <div class="wrap">
-
         <h2>Uni APP设置</h2>
 		<?php
 
@@ -88,311 +90,336 @@ function weixinapp_settings_page() {
 		}
 		?>
         <form method="post" action="options.php">
+			<?php settings_fields('uniapp-group'); ?>
+			<?php do_settings_sections('uniapp-group'); ?>
             <div class="responsive-tabs">
-				<?php settings_fields('weixinapp-group'); ?>
-				<?php do_settings_sections('weixinapp-group'); ?>
-                <div class="responsive-tabs">
-                    <h2>常规设置</h2>
-                    <div class="section">
-                        <table class="form-table">
-                            <tr valign="top">
-                                <th scope="row">AppID</th>
-                                <td><input type="text" name="wf_appid" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_appid')); ?>"/>*
-                                </td>
-                            </tr>
+                <!--                    <h2>通用设置</h2>-->
+                <!--                    <div class="section">-->
+                <!--                        <table class="form-table">-->
+                <!--                            -->
+                <!--                        </table>-->
+                <!--                    </div>-->
 
-                            <tr valign="top">
-                                <th scope="row">AppSecret</th>
-                                <td><input type="text" name="wf_secret" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_secret')); ?>"/>*
-                                </td>
-                            </tr>
+                <h2>微信小程序设置</h2>
+                <div class="section">
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">AppID</th>
+                            <td><input type="text" name="wf_appid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_appid')); ?>"/>*
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">商户号MCHID</th>
-                                <td><input type="text" name="wf_mchid" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_mchid')); ?>"/>
-                                    <p style="color: #959595; display:inline">微信支付商户后台获取</p>
-                                </td>
-                            </tr>
+                        <tr valign="top">
+                            <th scope="row">AppSecret</th>
+                            <td><input type="text" name="wf_secret" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_secret')); ?>"/>*
+                            </td>
+                        </tr>
 
+                        <tr valign="top">
+                            <th scope="row">商户号MCHID</th>
+                            <td><input type="text" name="wf_mchid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_mchid')); ?>"/>
+                                <p style="color: #959595; display:inline">微信支付商户后台获取</p>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">商户支付密钥key</th>
-                                <td><input type="text" name="wf_paykey" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_paykey')); ?>"/>
-                                    <p style="color: #959595; display:inline">微信支付商户后台获取</p>
-                                </td>
-                            </tr>
+                        <tr valign="top">
+                            <th scope="row">商户支付密钥key</th>
+                            <td><input type="text" name="wf_paykey" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_paykey')); ?>"/>
+                                <p style="color: #959595; display:inline">微信支付商户后台获取</p>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">支付描述</th>
-                                <td><input type="text" name="wf_paybody" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_paybody')); ?>"/><br/>
-                                    <p style="color: #959595; display:inline">* 商家名称-销售商品类目，例如：守望轩-赞赏</p>
-                                </td>
-                            </tr>
+                        <tr valign="top">
+                            <th scope="row">支付描述</th>
+                            <td><input type="text" name="wf_paybody" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_paybody')); ?>"/><br/>
+                                <p style="color: #959595; display:inline">* 商家名称-销售商品类目，例如：守望轩-赞赏</p>
+                            </td>
+                        </tr>
 
+                        <tr valign="top">
+                            <th scope="row">在小程序里显示的文章分类id</th>
+                            <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
+                                <br/>
+                                <p style="color: #959595 ; display:inline">* 文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
+                            </td>
+                        </tr>
 
-                            <!-- <tr valign="top">
-            <th scope="row">小程序首页滑动文章ID</th>
-            <td><input type="text" name="wf_swipe" style="width:400px; height:40px" value="<?php echo esc_attr(get_option('wf_swipe')); ?>" /><br/><p style="color: #959595; display:inline">* 请用英文半角逗号分隔。该设置将会取消，请使用“扩展设置”。</p></td>
-            </tr> -->
-
-                            <tr valign="top">
-                                <th scope="row">在小程序里显示的文章分类id</th>
-                                <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
-                                    <br/>
-                                    <p style="color: #959595 ; display:inline">* 文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
-                                </td>
-                            </tr>
-
-                            <tr valign="top">
-                                <th scope="row">选择"关于"页面</th>
-                                <td>
-                                    <select id="wf_about" name="wf_about">
-										<?php
-
-										$mypages = get_pages(array('child_of' => 0, 'sort_column' => 'post_date', 'sort_order' => 'desc'));
-										foreach ($mypages as $page) {
-											$title = $page->post_title;
-											$pageId = $page->ID;
-											?>
-
-                                            <option value="<?php echo $pageId; ?>" <?php echo get_option('wf_about') == $pageId ? 'selected' : ''; ?>><?php echo $title ?></option>"
-										<?php } ?>
-                                    </select>
-                                </td>
-                            </tr>
-
-                            <tr valign="top">
-                                <th scope="row">开启小程序的评论</th>
-                                <td>
-
+                        <tr valign="top">
+                            <th scope="row">选择"关于"页面</th>
+                            <td>
+                                <select id="wf_about" name="wf_about">
 									<?php
 
-									$wf_enable_comment_option = get_option('wf_enable_comment_option');
-									$checkbox = empty($wf_enable_comment_option) ? '' : 'checked';
-									echo '<input name="wf_enable_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+									$mypages = get_pages(array('child_of' => 0, 'sort_column' => 'post_date', 'sort_order' => 'desc'));
+									foreach ($mypages as $page) {
+										$title = $page->post_title;
+										$pageId = $page->ID;
+										?>
+
+                                        <option value="<?php echo $pageId; ?>" <?php echo get_option('wf_about') == $pageId ? 'selected' : ''; ?>><?php echo $title ?></option>"
+									<?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">开启小程序的评论</th>
+                            <td>
+
+								<?php
+
+								$wf_enable_comment_option = get_option('wf_enable_comment_option');
+								$checkbox = empty($wf_enable_comment_option) ? '' : 'checked';
+								echo '<input name="wf_enable_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
 
 
-									?>
-                                    &emsp;&emsp;&emsp;&emsp;“订阅者”用户开启评论审核
+								?>
+                                &emsp;&emsp;&emsp;&emsp;“订阅者”用户开启评论审核
 
-									<?php
-									$wf_enable_comment_check = get_option('wf_enable_comment_check');
-									$checkbox1 = empty($wf_enable_comment_check) ? '' : 'checked';
-									echo '<input name="wf_enable_comment_check"  type="checkbox"  value="1" ' . $checkbox1 . ' />';
+								<?php
+								$wf_enable_comment_check = get_option('wf_enable_comment_check');
+								$checkbox1 = empty($wf_enable_comment_check) ? '' : 'checked';
+								echo '<input name="wf_enable_comment_check"  type="checkbox"  value="1" ' . $checkbox1 . ' />';
 
-									?>
-                                </td>
-                            </tr>
+								?>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">小程序是否是企业主体</th>
-                                <td>
-									<?php
-									$wf_enterprise_minapp = get_option('wf_enterprise_minapp');
-									$checkbox = empty($wf_enterprise_minapp) ? '' : 'checked';
-									echo '<input name="wf_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
-                                </td>
+                        <tr valign="top">
+                            <th scope="row">小程序是否是企业主体</th>
+                            <td>
+								<?php
+								$wf_weixin_enterprise_minapp = get_option('wf_weixin_enterprise_minapp');
+								$checkbox = empty($wf_weixin_enterprise_minapp) ? '' : 'checked';
+								echo '<input name="wf_weixin_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">小程序logo图片地址</th>
-                                <td><input type="text" name="wf_logo_imageurl" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_logo_imageurl')); ?>"/> <input
-                                            id="wf_logo_imageurl-btn" class="button im-upload" type="button"
-                                            value="选择图片"/><br/>
-                                    <p style="color: #959595; display:inline">*
-                                        请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                                </td>
+                        <tr valign="top">
+                            <th scope="row">小程序logo图片地址</th>
+                            <td><input type="text" name="wf_logo_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_logo_imageurl')); ?>"/> <input
+                                        id="wf_logo_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
 
-                            </tr>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">海报图片默认地址</th>
-                                <td><input type="text" name="wf_poster_imageurl" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_poster_imageurl')); ?>"/> <input
-                                            id="wf_poster_imageurl-btn" class="button im-upload" type="button"
-                                            value="选择图片"/><br/>
-                                    <p style="color: #959595; display:inline">*
-                                        请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                                </td>
+                        <tr valign="top">
+                            <th scope="row">海报图片默认地址</th>
+                            <td><input type="text" name="wf_poster_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_poster_imageurl')); ?>"/> <input
+                                        id="wf_poster_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
 
-                            </tr>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">赞赏码图片地址</th>
-                                <td><input type="text" name="wf_zan_imageurl" style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_zan_imageurl')); ?>"/> <input
-                                            id="wf_zan_imageurl-btn" class="button im-upload" type="button"
-                                            value="选择图片"/><br/>
-                                    <p style="color: #959595; display:inline">*
-                                        请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                                </td>
+                        <tr valign="top">
+                            <th scope="row">赞赏码图片地址</th>
+                            <td><input type="text" name="wf_zan_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_zan_imageurl')); ?>"/> <input
+                                        id="wf_zan_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
 
-                            </tr>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">"赞赏"文字调整为</th>
-                                <td><input type="text" name="wf_praise_word" placeholder="喜欢"
-                                           style="width:400px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_praise_word')); ?>"/><br/>
-                                    <p style="color: #959595; display:inline">*
-                                        例如：<code>鼓励</code>,<code>喜欢</code>，<code>稀罕</code>，不要超过两个汉字</p>
-                                </td>
-                            </tr>
+                        <tr valign="top">
+                            <th scope="row">"赞赏"文字调整为</th>
+                            <td><input type="text" name="wf_praise_word" placeholder="喜欢"
+                                       style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_praise_word')); ?>"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    例如：<code>鼓励</code>,<code>喜欢</code>，<code>稀罕</code>，不要超过两个汉字</p>
+                            </td>
+                        </tr>
 
-
-                            <tr valign="top">
-                                <th scope="row">downloadFile域名</th>
-                                <td>
+                        <tr valign="top">
+                            <th scope="row">downloadFile域名</th>
+                            <td>
                                     <textarea name="wf_downloadfile_domain" id="wf_downloadfile_domain"
                                               class="large-text code"
                                               rows="3"><?php echo esc_attr(get_option('wf_downloadfile_domain')); ?></textarea>
-                                    <br/>
-                                    <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔</p>
-                                </td>
+                                <br/>
+                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔</p>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">业务域名</th>
-                                <td>
+                        <tr valign="top">
+                            <th scope="row">业务域名</th>
+                            <td>
                                     <textarea name="wf_business_domain" id="wf_business_domain" class="large-text code"
                                               rows="3"><?php echo esc_attr(get_option('wf_business_domain')); ?></textarea>
-                                    <br/>
-                                    <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
-                                </td>
+                                <br/>
+                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
+                            </td>
 
 
-                            </tr>
+                        </tr>
 
-                        </table>
-                    </div>
-                    <h2>广告设置</h2>
-                    <div class="section">
-                        <table class="form-table">
-                            <tr valign="top">
-                                <th scope="row">开启文章列表广告</th>
-                                <td>
-									<?php
-									$wf_list_ad = get_option('wf_list_ad');
-									$checkbox = empty($wf_list_ad) ? '' : 'checked';
-									echo '<input name="wf_list_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_list_ad_id"
-                                                                              style="width:300px; height:40px"
-                                                                              value="<?php echo esc_attr(get_option('wf_list_ad_id')); ?>"/>
-                                    <br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;每<input
-                                            type="number" name="wf_list_ad_every" style="width:40px; height:40px"
-                                            value="<?php echo esc_attr(get_option('wf_list_ad_every')); ?>"/>条列表展示一条广告<br/>
-                                    <p style="color: #959595; display:inline">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;请输入整数,否则无法正常展示广告</p>
-                                </td>
-                                </td>
-                            </tr>
+                        <tr valign="top">
+                            <th scope="row">开启文章列表广告</th>
+                            <td>
+								<?php
+								$wf_list_ad = get_option('wf_list_ad');
+								$checkbox = empty($wf_list_ad) ? '' : 'checked';
+								echo '<input name="wf_list_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_list_ad_id"
+                                                                          style="width:300px; height:40px"
+                                                                          value="<?php echo esc_attr(get_option('wf_list_ad_id')); ?>"/>
+                                <br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;每<input
+                                        type="number" name="wf_list_ad_every" style="width:40px; height:40px"
+                                        value="<?php echo esc_attr(get_option('wf_list_ad_every')); ?>"/>条列表展示一条广告<br/>
+                                <p style="color: #959595; display:inline">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;请输入整数,否则无法正常展示广告</p>
+                            </td>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">开启内容详情页广告</th>
-                                <td>
+                        <tr valign="top">
+                            <th scope="row">开启内容详情页广告</th>
+                            <td>
 
-									<?php
-									$wf_detail_ad = get_option('wf_detail_ad');
-									$checkbox = empty($wf_detail_ad) ? '' : 'checked';
-									echo '<input name="wf_detail_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_detail_ad_id"
-                                                                              style="width:300px; height:40px"
-                                                                              value="<?php echo esc_attr(get_option('wf_detail_ad_id')); ?>"/>
-                                </td>
-                            </tr>
+								<?php
+								$wf_detail_ad = get_option('wf_detail_ad');
+								$checkbox = empty($wf_detail_ad) ? '' : 'checked';
+								echo '<input name="wf_detail_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_detail_ad_id"
+                                                                          style="width:300px; height:40px"
+                                                                          value="<?php echo esc_attr(get_option('wf_detail_ad_id')); ?>"/>
+                            </td>
+                        </tr>
 
-                            <tr valign="top">
-                                <th scope="row">激励视频广告id</th>
-                                <td>
-                                    <input type="text" name="wf_excitation_ad_id" style="width:300px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_excitation_ad_id')); ?>"/>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">视频广告id</th>
-                                <td>
-                                    <input type="text" name="wf_video_ad_id" style="width:300px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_video_ad_id')); ?>"/>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">插屏广告id</th>
-                                <td>
-                                    <input type="text" name="wf_interstitial_ad_id" style="width:300px; height:40px"
-                                           value="<?php echo esc_attr(get_option('wf_interstitial_ad_id')); ?>"/>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">启动插屏广告的页面</th>
-                                <td>
-									<?php
-									$enable_index_interstitial_ad = get_option('enable_index_interstitial_ad');
-									$checkbox = empty($enable_index_interstitial_ad) ? '' : 'checked';
-									echo '首页<input name="enable_index_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;
-									<?php
-									$enable_detail_interstitial_ad = get_option('enable_detail_interstitial_ad');
-									$checkbox = empty($enable_detail_interstitial_ad) ? '' : 'checked';
-									echo '文章详情页<input name="enable_detail_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
+                        <tr valign="top">
+                            <th scope="row">激励视频广告id</th>
+                            <td>
+                                <input type="text" name="wf_excitation_ad_id" style="width:300px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_excitation_ad_id')); ?>"/>
+                            </td>
+                        </tr>
 
-                                    &emsp;
-									<?php
-									$enable_topic_interstitial_ad = get_option('enable_topic_interstitial_ad');
-									$checkbox = empty($enable_topic_interstitial_ad) ? '' : 'checked';
-									echo '专题(分类)页<input name="enable_topic_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;
-									<?php
-									$enable_list_interstitial_ad = get_option('enable_list_interstitial_ad');
-									$checkbox = empty($enable_list_interstitial_ad) ? '' : 'checked';
-									echo '专题(分类)文章列表页 &emsp;<input name="enable_list_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;
-									<?php
-									$enable_hot_interstitial_ad = get_option('enable_hot_interstitial_ad');
-									$checkbox = empty($enable_hot_interstitial_ad) ? '' : 'checked';
-									echo '排行页<input name="enable_hot_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;
-									<?php
-									$enable_comments_interstitial_ad = get_option('enable_comments_interstitial_ad');
-									$checkbox = empty($enable_comments_interstitial_ad) ? '' : 'checked';
-									echo '最新评论页<input name="enable_comments_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
-                                    &emsp;
-									<?php
-									$enable_live_interstitial_ad = get_option('enable_live_interstitial_ad');
-									$checkbox = empty($enable_live_interstitial_ad) ? '' : 'checked';
-									echo '直播页<input name="enable_live_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-									?>
+                        <tr valign="top">
+                            <th scope="row">视频广告id</th>
+                            <td>
+                                <input type="text" name="wf_video_ad_id" style="width:300px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_video_ad_id')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">插屏广告id</th>
+                            <td>
+                                <input type="text" name="wf_interstitial_ad_id" style="width:300px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_interstitial_ad_id')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">启动插屏广告的页面</th>
+                            <td>
+								<?php
+								$enable_index_interstitial_ad = get_option('enable_index_interstitial_ad');
+								$checkbox = empty($enable_index_interstitial_ad) ? '' : 'checked';
+								echo '首页<input name="enable_index_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;
+								<?php
+								$enable_detail_interstitial_ad = get_option('enable_detail_interstitial_ad');
+								$checkbox = empty($enable_detail_interstitial_ad) ? '' : 'checked';
+								echo '文章详情页<input name="enable_detail_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+
+                                &emsp;
+								<?php
+								$enable_topic_interstitial_ad = get_option('enable_topic_interstitial_ad');
+								$checkbox = empty($enable_topic_interstitial_ad) ? '' : 'checked';
+								echo '专题(分类)页<input name="enable_topic_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;
+								<?php
+								$enable_list_interstitial_ad = get_option('enable_list_interstitial_ad');
+								$checkbox = empty($enable_list_interstitial_ad) ? '' : 'checked';
+								echo '专题(分类)文章列表页 &emsp;<input name="enable_list_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;
+								<?php
+								$enable_hot_interstitial_ad = get_option('enable_hot_interstitial_ad');
+								$checkbox = empty($enable_hot_interstitial_ad) ? '' : 'checked';
+								echo '排行页<input name="enable_hot_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;
+								<?php
+								$enable_comments_interstitial_ad = get_option('enable_comments_interstitial_ad');
+								$checkbox = empty($enable_comments_interstitial_ad) ? '' : 'checked';
+								echo '最新评论页<input name="enable_comments_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                                &emsp;
+								<?php
+								$enable_live_interstitial_ad = get_option('enable_live_interstitial_ad');
+								$checkbox = empty($enable_live_interstitial_ad) ? '' : 'checked';
+								echo '直播页<input name="enable_live_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
 
 
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                            </td>
+                        </tr>
 
+                    </table>
+                </div>
+                <h2>QQ小程序设置</h2>
+                <div class="section">
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">AppID</th>
+                            <td><input type="text" name="wf_qq_appid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_qq_appid')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">AppSecret</th>
+                            <td><input type="text" name="wf_qq_secret" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_qq_secret')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">小程序是否是企业主体</th>
+                            <td>
+			                    <?php
+			                    $wf_qq_enterprise_minapp = get_option('wf_qq_enterprise_minapp');
+			                    $checkbox = empty($wf_qq_enterprise_minapp) ? '' : 'checked';
+			                    echo '<input name="wf_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
+			                    ?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
+            </div>
 
-				<?php submit_button(); ?>
+
+			<?php submit_button(); ?>
         </form>
 		<?php get_jquery_source(); ?>
         <script>
             jQuery(document).ready(function ($) {
                 RESPONSIVEUI.responsiveTabs();
-                // if($("input[name=post_meta]").attr('checked')) {
-                //     $("#section_meta_list").addClass("hide");
-                // }
             });
         </script>
     </div>

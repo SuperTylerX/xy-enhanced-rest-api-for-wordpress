@@ -20,7 +20,7 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'GET',
 				'callback' => array($this, 'get_general_setting'),
-				'permission_callback' => array($this, __return_true()),
+				'permission_callback' => array($this, 'get_item_permissions_check'),
 			),
 			// Register our schema callback.
 			'schema' => array($this, 'get_public_item_schema'),
@@ -48,7 +48,8 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["expand"] = $_expand;
 
 		$result["wf_enable_comment_option"] = empty(get_option('wf_enable_comment_option')) ? "0" : get_option('wf_enable_comment_option');
-		$result["wf_enterprise_minapp"] = empty(get_option('wf_enterprise_minapp')) ? "0" : get_option('wf_enterprise_minapp');
+		$result["wf_weixin_enterprise_minapp"] = empty(get_option('wf_weixin_enterprise_minapp')) ? "0" : get_option('wf_weixin_enterprise_minapp');
+		$result["wf_qq_enterprise_minapp"] = empty(get_option('wf_qq_enterprise_minapp')) ? "0" : get_option('wf_qq_enterprise_minapp');
 
 		$result["interstitialAdId"] = empty(get_option('wf_interstitial_ad_id')) ? "" : get_option('wf_interstitial_ad_id');
 		$result["enable_index_interstitial_ad"] = empty(get_option('enable_index_interstitial_ad')) ? "0" : get_option('enable_index_interstitial_ad');
@@ -62,6 +63,12 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$response = rest_ensure_response($result);
 		return $response;
 
+	}
+
+
+	public function get_item_permissions_check($request) {
+
+		return true;
 	}
 
 }
