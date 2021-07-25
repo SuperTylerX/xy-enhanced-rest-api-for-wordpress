@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 class RAM_REST_QQ_Controller extends WP_REST_Controller {
 
 	public function __construct() {
-		$this->namespace = 'watch-life-net/v1';
+		$this->namespace = 'uni-app-rest-enhanced/v1';
 		$this->resource_name = 'qq';
 	}
 
@@ -80,6 +80,21 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
+		// H5用户登录
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/h5Login', array(
+			array(
+				'methods' => 'POST',
+				'callback' => array($this, 'h5Login'),
+				'permission_callback' => array($this, 'return_true'),
+				'args' => array(
+					'context' => $this->get_context_param(array('default' => 'view')),
+					'access_token' => array(
+						'required' => true
+					)
+				)
+			),
+			'schema' => array($this, 'get_public_item_schema'),
+		));
 
 	}
 
@@ -258,6 +273,51 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 		$unionid = $api_result['unionid'];
 
 		return $this->processLogin($nickname, $avatarUrl, $openId, $unionid);
+	}
+
+	// 用户H5登录
+	function h5Login($request) {
+
+		$access_token = $request["access_token"];
+		// 获取 openid， 用access_token换取openid
+		$access_url = "https://graph.qq.com/oauth2.0/me?access_token=" . $access_token . "&unionid=1&fmt=json";
+		$access_result = https_request($access_url);
+
+		if ($access_result == 'ERROR') {
+			return new WP_Error('error', 'API错误：' . json_encode($access_result), array('status' => 501));
+		}
+
+
+		$api_result = json_decode($access_result, true);
+
+		if (empty($api_result['openid']) || empty($api_result['client_id'])) {
+			return new WP_Error('error', 'API错误：' . json_encode($api_result), array('status' => 502));
+		}
+
+		$openId = $api_result['openid'];
+		$unionid = $api_result['unionid'];
+		$clientId = $api_result['client_id'];
+
+		$access_url = "https://graph.qq.com/user/get_user_info?access_token=" . $access_token . "&oauth_consumer_key=" . $clientId . "&openid=" . $openId;
+		$access_result = https_request($access_url);
+
+		if ($access_result == 'ERROR') {
+			return new WP_Error('error', 'API错误：' . json_encode($access_result), array('status' => 501));
+		}
+
+		$api_result = json_decode($access_result, true);
+
+		if (empty($api_result['nickname']) || empty($api_result['figureurl_qq_2'])) {
+			return new WP_Error('error', 'API错误：' . json_encode($api_result), array('status' => 502));
+		}
+
+		$avatarUrl = $api_result['figureurl_qq_2'];
+		$nickname = $api_result['nickname'];
+
+
+		return $this->processLogin($nickname, $avatarUrl, $openId, $unionid);
+
+
 	}
 
 	function update_userInfo_permissions_check($request) {

@@ -40,7 +40,7 @@ class RAM_WP_REST_Posts_Controller extends WP_REST_Controller {
 	 */
 	public function __construct() {
 		$this->post_type = "post";
-		$this->namespace = 'watch-life-net/v1';
+		$this->namespace = 'uni-app-rest-enhanced/v1';
 		$this->rest_base = "posts";
 
 		$this->meta = new WP_REST_Post_Meta_Fields($this->post_type);

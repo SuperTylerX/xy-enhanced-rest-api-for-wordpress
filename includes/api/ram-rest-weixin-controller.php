@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 
 	public function __construct() {
-		$this->namespace = 'watch-life-net/v1';
+		$this->namespace = 'uni-app-rest-enhanced/v1';
 		$this->resource_name = 'weixin';
 	}
 
@@ -424,7 +424,6 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 	function getWinxinQrcodeImg($request) {
 		$postid = $request['postid'];
 		$path = $request['path'];
-		$openid = $request['openid'];
 
 		$qrcodeName = 'qrcode-' . $postid . '.png'; //文章小程序二维码文件名
 		$qrcodeurl = REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'qrcode/' . $qrcodeName; //文章小程序二维码路径

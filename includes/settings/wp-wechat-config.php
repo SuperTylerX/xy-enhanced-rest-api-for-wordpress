@@ -61,7 +61,7 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'wf_downloadfile_domain');
 	register_setting('uniapp-group', 'wf_business_domain');
 	register_setting('uniapp-group', 'wf_zan_imageurl');
-	register_setting('uniapp-group', 'wf_logo_imageurl');
+	register_setting('uniapp-group', 'wf_share_imageurl');
 
 	register_setting('uniapp-group', 'enable_index_interstitial_ad');
 	register_setting('uniapp-group', 'enable_detail_interstitial_ad');
@@ -93,12 +93,88 @@ function weixinapp_settings_page() {
 			<?php settings_fields('uniapp-group'); ?>
 			<?php do_settings_sections('uniapp-group'); ?>
             <div class="responsive-tabs">
-                <!--                    <h2>通用设置</h2>-->
-                <!--                    <div class="section">-->
-                <!--                        <table class="form-table">-->
-                <!--                            -->
-                <!--                        </table>-->
-                <!--                    </div>-->
+                <h2>通用设置</h2>
+                <div class="section">
+                    <table class="form-table">
+
+                        <tr valign="top">
+                            <th scope="row">小程序logo图片地址</th>
+                            <td><input type="text" name="wf_logo_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_logo_imageurl')); ?>"/> <input
+                                        id="wf_logo_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
+
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">海报图片默认地址</th>
+                            <td><input type="text" name="wf_poster_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_poster_imageurl')); ?>"/> <input
+                                        id="wf_poster_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">分享菜单图片地址</th>
+                            <td><input type="text" name="wf_share_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_share_imageurl')); ?>"/> <input
+                                        id="wf_share_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
+
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">赞赏码图片地址</th>
+                            <td><input type="text" name="wf_zan_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_zan_imageurl')); ?>"/> <input
+                                        id="wf_zan_imageurl-btn" class="button im-upload" type="button"
+                                        value="选择图片"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">"赞赏"文字调整为</th>
+                            <td><input type="text" name="wf_praise_word" placeholder="喜欢"
+                                       style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_praise_word')); ?>"/><br/>
+                                <p style="color: #959595; display:inline">*
+                                    例如：<code>鼓励</code>,<code>喜欢</code>，<code>稀罕</code>，不要超过两个汉字</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">downloadFile域名</th>
+                            <td>
+                                    <textarea name="wf_downloadfile_domain" id="wf_downloadfile_domain"
+                                              class="large-text code"
+                                              rows="3"><?php echo esc_attr(get_option('wf_downloadfile_domain')); ?></textarea>
+                                <br/>
+                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">业务域名</th>
+                            <td>
+                                    <textarea name="wf_business_domain" id="wf_business_domain" class="large-text code"
+                                              rows="3"><?php echo esc_attr(get_option('wf_business_domain')); ?></textarea>
+                                <br/>
+                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
                 <h2>微信小程序设置</h2>
                 <div class="section">
@@ -200,75 +276,6 @@ function weixinapp_settings_page() {
 								echo '<input name="wf_weixin_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
                             </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">小程序logo图片地址</th>
-                            <td><input type="text" name="wf_logo_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_logo_imageurl')); ?>"/> <input
-                                        id="wf_logo_imageurl-btn" class="button im-upload" type="button"
-                                        value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                            </td>
-
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">海报图片默认地址</th>
-                            <td><input type="text" name="wf_poster_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_poster_imageurl')); ?>"/> <input
-                                        id="wf_poster_imageurl-btn" class="button im-upload" type="button"
-                                        value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                            </td>
-
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">赞赏码图片地址</th>
-                            <td><input type="text" name="wf_zan_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_zan_imageurl')); ?>"/> <input
-                                        id="wf_zan_imageurl-btn" class="button im-upload" type="button"
-                                        value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                            </td>
-
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">"赞赏"文字调整为</th>
-                            <td><input type="text" name="wf_praise_word" placeholder="喜欢"
-                                       style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_praise_word')); ?>"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    例如：<code>鼓励</code>,<code>喜欢</code>，<code>稀罕</code>，不要超过两个汉字</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">downloadFile域名</th>
-                            <td>
-                                    <textarea name="wf_downloadfile_domain" id="wf_downloadfile_domain"
-                                              class="large-text code"
-                                              rows="3"><?php echo esc_attr(get_option('wf_downloadfile_domain')); ?></textarea>
-                                <br/>
-                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">业务域名</th>
-                            <td>
-                                    <textarea name="wf_business_domain" id="wf_business_domain" class="large-text code"
-                                              rows="3"><?php echo esc_attr(get_option('wf_business_domain')); ?></textarea>
-                                <br/>
-                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
-                            </td>
-
-
                         </tr>
 
                         <tr valign="top">
@@ -401,11 +408,11 @@ function weixinapp_settings_page() {
                         <tr valign="top">
                             <th scope="row">小程序是否是企业主体</th>
                             <td>
-			                    <?php
-			                    $wf_qq_enterprise_minapp = get_option('wf_qq_enterprise_minapp');
-			                    $checkbox = empty($wf_qq_enterprise_minapp) ? '' : 'checked';
-			                    echo '<input name="wf_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
-			                    ?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
+								<?php
+								$wf_qq_enterprise_minapp = get_option('wf_qq_enterprise_minapp');
+								$checkbox = empty($wf_qq_enterprise_minapp) ? '' : 'checked';
+								echo '<input name="wf_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
                             </td>
                         </tr>
                     </table>

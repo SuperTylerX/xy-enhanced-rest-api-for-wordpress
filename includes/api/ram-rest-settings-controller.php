@@ -8,7 +8,7 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 
 	public function __construct() {
 
-		$this->namespace = 'watch-life-net/v1';
+		$this->namespace = 'uni-app-rest-enhanced/v1';
 		$this->resource_name = 'options';
 	}
 
@@ -36,10 +36,10 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["downloadfileDomain"] = $downloadfileDomain;
 		$result["businessDomain"] = $businessDomain;
 
-		$zanImageurl = get_option('wf_zan_imageurl');
-		$logoImageurl = get_option('wf_logo_imageurl');
-		$result["zanImageurl"] = $zanImageurl;
-		$result["logoImageurl"] = $logoImageurl;
+		$result['postImageUrl'] = get_option("wf_poster_imageurl");
+		$result["zanImageUrl"] = get_option('wf_zan_imageurl');
+		$result["logoImageUrl"] =get_option('wf_logo_imageurl');
+		$result["shareImageUrl"] =get_option('wf_share_imageurl');
 
 		$swipe_nav = $expand['swipe_nav'];
 		$selected_nav = $expand['selected_nav'];

@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 function custom_post_fields($data, $post, $request) {
 
 
-	if (strpos($_SERVER['REQUEST_URI'], 'watch-life-net/v1/posts') !== false) {
+	if (strpos($_SERVER['REQUEST_URI'], 'uni-app-rest-enhanced/v1/posts') !== false) {
 		return $data;
 	}
 	global $wpdb;
@@ -60,7 +60,12 @@ function custom_post_fields($data, $post, $request) {
 	$post_date = $post->post_date;
 	$_data['post_date'] = time_tran($post_date);
 
-	$_data['like_count'] = get_post_meta($post_id, 'postApprovalCount', true) || 0;
+	$like_count = get_post_meta($post_id, 'postApprovalCount', true);
+	if (empty($like_count)) {
+		$_data['like_count'] = 0;
+	} else {
+		$_data['like_count'] = $like_count;
+	}
 
 	$post_views = (int)get_post_meta($post_id, 'views', true);
 	$params = $request->get_params();
@@ -107,10 +112,6 @@ function custom_post_fields($data, $post, $request) {
 		$_content['raw'] = $raw; //古腾堡编辑器需要该属性，否则报错
 		$_content['protected'] = $content_protected;
 		$_data['content'] = $_content;
-
-
-		$postImageUrl = get_option("wf_poster_imageurl");
-		$_data['postImageUrl'] = $postImageUrl;
 
 		$postApprovalUsers = get_post_meta($post_id, 'postApprovalUsers', true);
 		if (empty($postApprovalUsers)) {

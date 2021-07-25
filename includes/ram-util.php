@@ -771,10 +771,6 @@ function custom_minapper_post_fields($_data, $post, $request) {
 		$_content['protected'] = $content_protected;
 		$_data['content'] = $_content;
 
-
-		$postImageUrl = get_option("wf_poster_imageurl");
-		$_data['postImageUrl'] = $postImageUrl;
-
 		$postApprovalUsers = get_post_meta($post_id, 'postApprovalUsers', true);
 		if (empty($postApprovalUsers)) {
 			$postApprovalUsers = [];

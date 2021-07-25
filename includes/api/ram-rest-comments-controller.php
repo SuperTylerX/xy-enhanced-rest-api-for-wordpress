@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 class RAM_REST_Comments_Controller extends WP_REST_Controller {
 	public function __construct() {
-		$this->namespace = 'watch-life-net/v1';
+		$this->namespace = 'uni-app-rest-enhanced/v1';
 		$this->resource_name = 'comment';
 	}
 
