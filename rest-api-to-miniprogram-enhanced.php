@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: REST API TO UniAPP
+Plugin Name: Rest API to UniApp
 Plugin URI: https://github.com/SuperTylerX/rest-api-to-miniprogram-enhanced
 Description: 在微慕小程序开源版插件基础上进行二次开发，为微信小程序、app提供定制化WordPress REST API json 输出.
 Version: 4.0.9

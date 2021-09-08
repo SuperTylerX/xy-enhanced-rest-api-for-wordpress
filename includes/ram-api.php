@@ -40,6 +40,7 @@ class RAM_API extends WP_REST_Controller {
 		include_once('api/ram-rest-live-controller.php');
 		include_once('api/ram-wp-rest-posts-controller.php');
 		include_once('api/ram-rest-qq-controller.php');
+		include_once('api/ram-rest-menu-controller.php');
 	}
 
 	/**
@@ -55,6 +56,7 @@ class RAM_API extends WP_REST_Controller {
 			'RAM_REST_Categories_Controller',
 			'RAM_WP_REST_Posts_Controller',
 			'RAM_REST_Live_Controller',
+			'RAM_REST_Menu_Controller',
 			'RAM_REST_Weixin_Controller',
 			'RAM_REST_QQ_Controller'
 		);

@@ -40,6 +40,8 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'wf_poster_imageurl');
 	register_setting('uniapp-group', 'wf_enable_comment_option');
 	register_setting('uniapp-group', 'wf_enable_comment_check');
+	register_setting('uniapp-group', 'wf_enable_qq_comment_option');
+
 
 	register_setting('uniapp-group', 'wf_praise_word');
 	register_setting('uniapp-group', 'wf_weixin_enterprise_minapp');
@@ -55,7 +57,6 @@ function register_weixinappsettings() {
 
 	register_setting('uniapp-group', 'wf_detail_ad');
 	register_setting('uniapp-group', 'wf_detail_ad_id');
-	register_setting('uniapp-group', 'wf_about');
 	register_setting('uniapp-group', 'wf_display_categories');
 
 	register_setting('uniapp-group', 'wf_downloadfile_domain');
@@ -70,6 +71,12 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'enable_hot_interstitial_ad');
 	register_setting('uniapp-group', 'enable_comments_interstitial_ad');
 	register_setting('uniapp-group', 'enable_live_interstitial_ad');
+
+	// APP 设置
+	register_setting('uniapp-group', 'uni_app_updated_version');
+	register_setting('uniapp-group', 'uni_app_updated_version_code');
+	register_setting('uniapp-group', 'uni_app_updated_content');
+	register_setting('uniapp-group', 'uni_app_updated_download_link');
 }
 
 function weixinapp_settings_page() {
@@ -96,6 +103,27 @@ function weixinapp_settings_page() {
                 <h2>通用设置</h2>
                 <div class="section">
                     <table class="form-table">
+
+                        <tr valign="top">
+                            <th scope="row">“订阅者”用户开启评论审核</th>
+                            <td>
+								<?php
+								$wf_enable_comment_check = get_option('wf_enable_comment_check');
+								$checkbox1 = empty($wf_enable_comment_check) ? '' : 'checked';
+								echo '<input name="wf_enable_comment_check"  type="checkbox"  value="1" ' . $checkbox1 . ' />';
+
+								?>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">在小程序里显示的文章分类id</th>
+                            <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
+                                <br/>
+                                <p style="color: #959595 ; display:inline">* 文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
+                            </td>
+                        </tr>
 
                         <tr valign="top">
                             <th scope="row">小程序logo图片地址</th>
@@ -217,52 +245,14 @@ function weixinapp_settings_page() {
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">在小程序里显示的文章分类id</th>
-                            <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
-                                <br/>
-                                <p style="color: #959595 ; display:inline">* 文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">选择"关于"页面</th>
-                            <td>
-                                <select id="wf_about" name="wf_about">
-									<?php
-
-									$mypages = get_pages(array('child_of' => 0, 'sort_column' => 'post_date', 'sort_order' => 'desc'));
-									foreach ($mypages as $page) {
-										$title = $page->post_title;
-										$pageId = $page->ID;
-										?>
-
-                                        <option value="<?php echo $pageId; ?>" <?php echo get_option('wf_about') == $pageId ? 'selected' : ''; ?>><?php echo $title ?></option>"
-									<?php } ?>
-                                </select>
-                            </td>
-                        </tr>
 
                         <tr valign="top">
                             <th scope="row">开启小程序的评论</th>
                             <td>
-
 								<?php
-
 								$wf_enable_comment_option = get_option('wf_enable_comment_option');
 								$checkbox = empty($wf_enable_comment_option) ? '' : 'checked';
 								echo '<input name="wf_enable_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
-
-
-								?>
-                                &emsp;&emsp;&emsp;&emsp;“订阅者”用户开启评论审核
-
-								<?php
-								$wf_enable_comment_check = get_option('wf_enable_comment_check');
-								$checkbox1 = empty($wf_enable_comment_check) ? '' : 'checked';
-								echo '<input name="wf_enable_comment_check"  type="checkbox"  value="1" ' . $checkbox1 . ' />';
-
 								?>
                             </td>
                         </tr>
@@ -388,6 +378,7 @@ function weixinapp_settings_page() {
 
                     </table>
                 </div>
+
                 <h2>QQ小程序设置</h2>
                 <div class="section">
                     <table class="form-table">
@@ -406,6 +397,17 @@ function weixinapp_settings_page() {
                         </tr>
 
                         <tr valign="top">
+                            <th scope="row">开启小程序的评论</th>
+                            <td>
+								<?php
+								$wf_enable_qq_comment_option = get_option('wf_enable_qq_comment_option');
+								$checkbox = empty($wf_enable_qq_comment_option) ? '' : 'checked';
+								echo '<input name="wf_enable_qq_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
                             <th scope="row">小程序是否是企业主体</th>
                             <td>
 								<?php
@@ -418,6 +420,47 @@ function weixinapp_settings_page() {
                     </table>
                 </div>
 
+                <h2>APP设置</h2>
+                <div class="section">
+                    <table class="form-table">
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_updated_version">APP版本名称</label></th>
+                            <td><input type="text" name="uni_app_updated_version" style="width:400px; height:40px"
+                                       id="uni_app_updated_version"
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_version')); ?>"/>
+                                <p style="color: #959595; display:inline">*版本名称用于用户端显示，形式类似于"1.2.0"</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_updated_version_code">APP版本号</label></th>
+                            <td><input type="number" name="uni_app_updated_version_code"
+                                       style="width:400px; height:40px"
+                                       id="uni_app_updated_version_code"
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_version_code')); ?>"/>
+                                <p style="color: #959595; display:inline">*版本号用于开发者区分，请使用纯数字表示，形式类似于"120"</p>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_updated_content">APP下载链接</label></th>
+                            <td><input type="text" name="uni_app_updated_content" style="width:400px; height:40px"
+                                       id="uni_app_updated_content"
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_content')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_updated_download_link">APP更新内容</label></th>
+                            <td>
+                                <textarea name="uni_app_updated_download_link" cols="60"
+                                          rows="10"
+                                          id="uni_app_updated_download_link"><?php echo esc_attr(get_option('uni_app_updated_download_link')); ?></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
 

@@ -151,40 +151,6 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 //            // Register our schema callback.
 //            'schema' => array($this, 'get_public_item_schema'),
 //        ));
-
-		register_rest_route($this->namespace, '/' . $this->resource_name . '/about', array(
-			// Here we register the readable endpoint for collections.
-			array(
-				'methods' => 'GET',
-				'callback' => array($this, 'getPostAbout'),
-				'permission_callback' => array($this, 'get_item_permissions_check')
-
-			),
-			// Register our schema callback.
-			'schema' => array($this, 'get_public_item_schema'),
-		));
-	}
-
-	function getPostAbout($request) {
-
-		$aboutId = get_option("wf_about");
-		if (empty($aboutId)) {
-			return new WP_Error('error', '未设置关于页面', array('status' => "404"));
-		} else {
-
-			$posts = getPosts($aboutId);
-			if (count($posts) > 0) {
-				$post = $posts[0];
-				$enterpriseMinapp = get_option('wf_enterprise_minapp');
-				$enterpriseMinapp = empty($enterpriseMinapp) ? '0' : $enterpriseMinapp;
-				$post["enterpriseMinapp"] = $enterpriseMinapp;
-				$response = rest_ensure_response($post);
-				return $response;
-			} else {
-
-				return new WP_Error('error', '关于页面设置有错误', array('status' => "404"));
-			}
-		}
 	}
 
 //    function getallpraise($request) {
