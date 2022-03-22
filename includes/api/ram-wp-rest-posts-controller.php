@@ -340,7 +340,7 @@ class RAM_WP_REST_Posts_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'rest_post_invalid_page_number',
 				__('The page number requested is larger than the number of pages available.'),
-				array('status' => 400)
+				array('status' => 200)
 			);
 		}
 

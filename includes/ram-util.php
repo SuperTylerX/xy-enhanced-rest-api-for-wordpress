@@ -18,6 +18,9 @@ function get_post_content_first_image($post_content) {
 	if ($matches && isset($matches[1]) && isset($matches[1][0])) {
 		return $matches[1][0];
 	}
+
+	// no image
+	return false;
 }
 
 //获取文章图片的地址
@@ -127,13 +130,9 @@ function get_post_content_images($post_content) {
 	preg_match_all('|<img.*?src=[\'"](.*?)[\'"].*?>|i', do_shortcode($post_content), $matches);
 	$images = array();
 	if ($matches && isset($matches[1])) {
-		$_images = $matches[1];
 
 		for ($i = 0; $i < count($matches[1]); $i++) {
-			$imageurl['imagesurl'] = $matches[1][$i];
-			$imageurl['id'] = 'image' . $i;
-			$images[] = $imageurl;
-
+			$images[] = $matches[1][$i];
 		}
 
 		return $images;
@@ -142,6 +141,44 @@ function get_post_content_images($post_content) {
 
 	return null;
 
+}
+
+function get_cravatar($email) {
+	$address = strtolower(trim($email));
+	$hash = md5($address);
+	return 'https://cravatar.cn/avatar/' . $hash;
+}
+
+function get_avatar_url_2($id_or_email) {
+	if (is_numeric($id_or_email)) {
+		// isUserID
+		// 若存在本地头像则使用本地头像
+		$avatar = get_user_meta($id_or_email, "avatar", true);
+		if (empty($avatar)) {
+			$author = new WP_User($id_or_email);
+			$email = $author->user_email;
+			$avatar = get_cravatar($email);
+		}
+		return $avatar;
+	} elseif (is_string($id_or_email)) {
+		// isEmail
+		$user = get_user_by_email($id_or_email);
+		if (empty($user)) {
+			$avatar = get_user_meta($user->ID, "avatar", true);
+			if (empty($avatar)) {
+				$avatar = get_cravatar($id_or_email);
+			}
+			return $avatar;
+		} else {
+			return get_cravatar($id_or_email);
+		}
+	}
+	return false;
+}
+
+// wordpress获取头像函数
+function get_avatar_2($userid) {
+	return '<img  src="' . get_avatar_url_2($userid) . '"  width="20px" height="20px"/>';
 }
 
 
@@ -263,28 +300,6 @@ function myradus($im, $lift, $top, $lt_corner, $radius, $image_h, $image_w) {
 	imagecopymerge($im, $rt_corner, $image_w - $radius + $lift, $top, 0, 0, $radius, $radius, 100);
 }
 
-//需要填写AppId和AppSecret
-// function getAccessToken($appid,$appsecret) {
-//     $AppId = $appid; //小程序APPid
-//     $AppSecret = $appsecret; //小程序APPSecret
-//     $data = json_decode(file_get_contents("access_token.json"));
-//     if ($data->expire_time < time()) {
-//         $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$AppId.'&secret='.$AppSecret;
-//         $res = json_decode(httpGet($url));
-//         $access_token = $res->access_token;
-//         if ($access_token) {
-//             $data->expire_time = time() + 7000;
-//             $data->access_token = $access_token;
-//             $fp = fopen("access_token.json", "w");
-//             fwrite($fp, json_encode($data));
-//             fclose($fp);
-//         }
-//     } else {
-//        $access_token = $data->access_token;
-//     }
-//       return $access_token;
-// }
-
 function get_content_post($url, $post_data = array(), $header = array()) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -325,7 +340,6 @@ function https_request($url) {
 	return $data;
 }
 
-
 function https_curl_post($url, $data, $type) {
 	if ($type == 'json') {
 		//$headers = array("Content-type: application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
@@ -349,7 +363,6 @@ function https_curl_post($url, $data, $type) {
 	curl_close($curl);
 	return $data;
 }
-
 
 function time_tran($the_time) {
 	date_default_timezone_set('Asia/Shanghai');
@@ -502,33 +515,6 @@ function getUserLevel($userId) {
 
 }
 
-// function get_post_qq_video($content)
-// {
-//     $vcontent ='';
-//     preg_match('/https\:\/\/v.qq.com\/x\/(\S*)\/(\S*)\.html/',$content,$matches);
-//     if($matches)
-//     {
-//     	$vids=$matches[2];
-// 	    //$url='http://vv.video.qq.com/getinfo?vid='.$vids.'&defaultfmt=auto&otype=json&platform=1&defn=fhd&charge=0';
-// 	    //  defaultfmt： 1080P-fhd，超清-shd，高清-hd，标清-sd
-// 	    $url='http://vv.video.qq.com/getinfo?vid='.$vids.'&defaultfmt=auto&otype=json&platform=11001&defn=fhd&charge=0';
-// 	    //$res = file_get_contents($url);
-//         $res = https_request($url);
-// 	    if($res)
-// 	    {
-// 	    	$str = substr($res,13,-1);
-// 		    $newStr =json_decode($str,true);	    
-// 		    //$videoUrl= $newStr['vl']['vi'][0]['ul']['ui'][2]['url'].$newStr['vl']['vi'][0]['fn'].'?vkey='.$newStr['vl']['vi'][0]['fvkey']; 
-// 		    $videoUrl= $newStr['vl']['vi'][0]['ul']['ui'][0]['url'].$newStr['vl']['vi'][0]['fn'].'?vkey='.$newStr['vl']['vi'][0]['fvkey']; 
-// 		    $vcontent = preg_replace('~<video (.*?)></video>~s','<video src="'.$videoUrl.'" controls="controls" width="100%"></video>',$content);
-
-//         }	    
-
-//     }
-
-//     return $vcontent;
-// }
-
 function get_post_qq_video($content) {
 	$vcontent = '';
 	preg_match('/https\:\/\/v.qq.com\/x\/(\S*)\/(\S*)\.html/', $content, $matches);
@@ -603,59 +589,6 @@ function get_content_gallery($content, $flag) {
 	}
 
 	return $vcontent;
-
-}
-
-function getPosts($ids) {
-	global $wpdb;
-	$sql = "SELECT *  from " . $wpdb->posts . " where id in(" . $ids . ") ORDER BY find_in_set(id,'" . $ids . "')";
-	$_posts = $wpdb->get_results($sql);
-	$posts = array();
-	if (!empty($_posts)) {
-		foreach ($_posts as $post) {
-			$post_id = (int)$post->ID;
-			$post_title = stripslashes($post->post_title);
-			$post_content = nl2br($post->post_content);
-			$post_date = $post->post_date;
-			$post_permalink = get_permalink($post->ID);
-			$_data["id"] = $post_id;
-			$_data["post_title"] = $post_title;
-			$_data["post_content"] = $post_content;
-			$_data["post_date"] = $post_date;
-			$_data["post_permalink"] = $post_permalink;
-			$_data['type'] = "detailpage";
-
-			$enterpriseMinapp = get_option('wf_enterprise_minapp');
-			$enterpriseMinapp = empty($enterpriseMinapp) ? '0' : $enterpriseMinapp;
-			$_data['enterpriseMinapp'] = $enterpriseMinapp;
-
-			$praiseWord = get_option('wf_praise_word');
-			$praiseWord = empty($praiseWord) ? '鼓励' : $praiseWord;
-			$_data['praiseWord'] = $praiseWord;
-
-			$pageviews = (int)get_post_meta($post_id, 'views', true);
-			$_data['pageviews'] = $pageviews;
-
-			$comment_total = $wpdb->get_var("SELECT COUNT(1) FROM " . $wpdb->comments . " where  comment_approved = '1' and comment_post_ID=" . $post_id);
-			$_data['comment_total'] = $comment_total;
-
-			$images = getPostImages($post->post_content, $post_id);
-
-			$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-			$_data['content_first_image'] = $images['content_first_image'];
-			$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-			$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-
-			$_data['post_frist_image'] = $images['post_frist_image'];
-			$_data['post_medium_image'] = $images['post_medium_image'];
-			$_data['post_large_image'] = $images['post_large_image'];
-			$_data['post_full_image'] = $images['post_full_image'];
-			$_data['post_all_images'] = $images['post_all_images'];
-			$posts[] = $_data;
-		}
-
-	}
-	return $posts;
 
 }
 

@@ -347,7 +347,7 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 
 					$url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=" . $access_token;
 
-					$access_result = $this->https_curl_post($url, $postdata, 'json');
+					$access_result = https_curl_post($url, $postdata, 'json');
 
 					if ($access_result != "ERROR") {
 						$access_array = json_decode($access_result, true);
@@ -395,30 +395,6 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 
 		$response = rest_ensure_response($result);
 		return $response;
-	}
-
-	function https_curl_post($url, $data, $type) {
-		if ($type == 'json') {
-			//$headers = array("Content-type: application/json;charset=UTF-8","Accept: application/json","Cache-Control: no-cache", "Pragma: no-cache");
-			$data = json_encode($data);
-		}
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_POST, 1); // 发送一个常规的Post请求
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-		if (!empty($data)) {
-			curl_setopt($curl, CURLOPT_POST, 1);
-			curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-		}
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		//curl_setopt($curl, CURLOPT_HTTPHEADER, $headers );
-		$data = curl_exec($curl);
-		if (curl_errno($curl)) {
-			return 'ERROR';
-		}
-		curl_close($curl);
-		return $data;
 	}
 
 	function getWinxinQrcodeImg($request) {
