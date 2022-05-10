@@ -19,7 +19,6 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'updateUserInfo'),
-				'permission_callback' => array($this, 'update_userInfo_permissions_check'),
 				'args' => array(
 					'openid' => array(
 						'required' => true
@@ -41,7 +40,6 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'miniAppLogin'),
-				'permission_callback' => array($this, 'get_openid_permissions_check'),
 				'args' => array(
 					'context' => $this->get_context_param(array('default' => 'view')),
 					'avatarUrl' => array(
@@ -63,7 +61,6 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'appLogin'),
-				'permission_callback' => array($this, 'return_true'),
 				'args' => array(
 					'context' => $this->get_context_param(array('default' => 'view')),
 					'avatarUrl' => array(
@@ -85,7 +82,6 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'h5Login'),
-				'permission_callback' => array($this, 'return_true'),
 				'args' => array(
 					'context' => $this->get_context_param(array('default' => 'view')),
 					'access_token' => array(
@@ -319,23 +315,5 @@ class RAM_REST_QQ_Controller extends WP_REST_Controller {
 
 
 	}
-
-	function update_userInfo_permissions_check($request) {
-		return true;
-	}
-
-	function get_openid_permissions_check($request) {
-		$js_code = $request['js_code'];
-		if (empty($js_code)) {
-			return new WP_Error('error', 'js_code是空值', array('status' => 500));
-		} else if (!function_exists('curl_init')) {
-			return new WP_Error('error', 'php  curl扩展没有启用', array('status' => 500));
-		}
-
-		return true;
-	}
-
-	function return_true() {
-		return true;
-	}
+	
 }

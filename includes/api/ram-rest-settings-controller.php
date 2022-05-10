@@ -20,7 +20,6 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'GET',
 				'callback' => array($this, 'get_general_setting'),
-				'permission_callback' => array($this, 'get_item_permissions_check'),
 			),
 			// Register our schema callback.
 			'schema' => array($this, 'get_public_item_schema'),
@@ -63,12 +62,6 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["is_user_registration_enable"] = get_option('users_can_register') === "1";
 
 		return rest_ensure_response($result);
-	}
-
-
-	public function get_item_permissions_check($request) {
-
-		return true;
 	}
 
 }

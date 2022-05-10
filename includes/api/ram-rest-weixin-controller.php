@@ -19,7 +19,6 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'getWinxinQrcodeImg'),
-				'permission_callback' => array($this, 'get_qrcodeimg_permissions_check'),
 				'args' => array(
 					'postid' => array(
 						'required' => true
@@ -75,7 +74,6 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'updateUserInfo'),
-				'permission_callback' => array($this, 'update_userInfo_permissions_check'),
 				'args' => array(
 					'openid' => array(
 						'required' => true
@@ -97,7 +95,6 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'POST',
 				'callback' => array($this, 'userlogin'),
-				'permission_callback' => array($this, 'get_openid_permissions_check'),
 				'args' => array(
 					'context' => $this->get_context_param(array('default' => 'view')),
 					'avatarUrl' => array(
@@ -477,55 +474,5 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 		$response = rest_ensure_response($result);
 		return $response;
 	}
-
-	function send_message_permissions_check($request) {
-		$openid = $request['openid'];
-		$template_id = $request['template_id'];
-		$postid = $request['postid'];
-		$form_id = $request['form_id'];
-		$total_fee = $request['total_fee'];
-		$flag = $request['flag'];
-		$fromUser = $request['fromUser'];
-		//$parent=(int)$request['parent'];
-
-
-		if (empty($openid) || empty($template_id) || empty($postid) || empty($form_id) || empty($total_fee) || empty($flag) || empty($fromUser)) {
-			return new WP_Error('error', '参数错误', array('status' => 500));
-		} else if (!function_exists('curl_init')) {
-			return new WP_Error('error', 'php curl 
-            扩展没有启用', array('status' => 500));
-		}
-		return true;
-	}
-
-	function get_qrcodeimg_permissions_check($request) {
-		$postid = $request['postid'];
-		$path = $request['path'];
-
-		if (empty($postid) || empty($path)) {
-			return new WP_Error('error', '参数错误', array('status' => 500));
-		} else if (get_post($postid) == null) {
-			return new WP_Error('error', 'postId参数错误', array('status' => 500));
-		}
-		return true;
-	}
-
-	function update_userInfo_permissions_check($request) {
-		return true;
-	}
-
-	function get_openid_permissions_check($request) {
-		$js_code = $request['js_code'];
-		$encryptedData = $request['encryptedData'];
-		$iv = $request['iv'];
-		$avatarUrl = $request['avatarUrl'];
-		$nickname = empty($request['nickname']) ? '' : $request['nickname'];
-		if (empty($js_code)) {
-			return new WP_Error('error', 'js_code是空值', array('status' => 500));
-		} else if (!function_exists('curl_init')) {
-			return new WP_Error('error', 'php  curl扩展没有启用', array('status' => 500));
-		}
-
-		return true;
-	}
+	
 }
