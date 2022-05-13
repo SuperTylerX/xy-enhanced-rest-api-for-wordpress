@@ -140,24 +140,12 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			if ($comment->comment_parent == 0) {
 				$data["id"] = $comment->comment_ID;
 				$data["author_name"] = $comment->comment_author;
-
-				// 兼容以前的头像写法，读取用户url内是否为头像
-				$author_url = $comment->comment_author_url;
-				$author_url = strpos($author_url, "wx.qlogo.cn") ? $author_url : "";
-
-
-				if (isset($comment->user_id) && $author_url == "") {
-					// 存在该用户且头像为空
-					$_avatar = get_user_meta($comment->user_id, "avatar", true);
-					// 读取 avatar字段的user meta 作为头像
-					if (!empty($_avatar)) {
-						$author_url = $_avatar;
-					} else {
-						// 依然不存在，那么就使用默认头像
-						$author_url = "../../static/gravatar.png";
-					}
+				// 判断是否是访客留言
+				if (!empty($comment->user_id)) {
+					$data["author_url"] = get_avatar_url_2($comment->user_id);
+				} else {
+					$data["author_url"] = get_avatar_url_2($comment->comment_author_email);
 				}
-				$data["author_url"] = $author_url;
 				$data["date"] = time_tran($comment->comment_date);
 				$data["content"] = $comment->comment_content;
 				$data["userid"] = $comment->user_id;
@@ -189,7 +177,12 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			foreach ($comments as $comment) {
 				$data["id"] = $comment->comment_ID;
 				$data["author_name"] = $comment->comment_author;
-				$author_url = $comment->comment_author_url;
+				// 判断是否是访客留言
+				if (!empty($comment->user_id)) {
+					$data["author_url"] = get_avatar_url_2($comment->user_id);
+				} else {
+					$data["author_url"] = get_avatar_url_2($comment->comment_author_email);
+				}
 				$data["date"] = time_tran($comment->comment_date);
 				$data["content"] = $comment->comment_content;
 				$data["userid"] = $comment->user_id;

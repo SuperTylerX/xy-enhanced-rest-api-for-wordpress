@@ -321,7 +321,11 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 		$author_id = bbp_get_topic_author_id($topic_id);
 		$one_sticky['author_id'] = $author_id;
 		$one_sticky['author_name'] = bbp_get_topic_author_display_name($topic_id);;
-		$one_sticky['author_avatar'] = get_avatar_url_2($author_id);
+		if ($author_id !== 0) {
+			$one_sticky['author_avatar'] = get_avatar_url_2($author_id);
+		} else {
+			$one_sticky['author_avatar'] = get_avatar_url_2(bbp_get_topic_author_email($topic_id));
+		}
 		$one_sticky['views'] = (int)get_post_meta($topic_id, 'views', true);
 		$one_sticky['post_date'] = bbp_get_topic_post_date($topic_id);
 		$one_sticky['excerpt'] = mb_strimwidth(wp_filter_nohtml_kses(bbp_get_topic_content($topic_id)), 0, 150, '...');
@@ -351,17 +355,17 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 		$all_topic_data['reply_count'] = (int)bbp_get_topic_reply_count($topic_id);
 		$all_topic_data['permalink'] = bbp_get_topic_permalink($topic_id);
 		$tags = wp_get_object_terms($topic_id, "topic-tag");
-		$i = 0;
-		$all_topic_data['tags'] = [];
 		foreach ($tags as $tag) {
-			$all_topic_data['tags'][$i]['id'] = $tag->term_id;
-			$all_topic_data['tags'][$i]['name'] = $tag->name;
-			$i++;
+			$all_topic_data['tags'][] = array('id' => $tag->term_id, 'name' => $tag->name);
 		}
 		$all_topic_data['author_name'] = bbp_get_topic_author_display_name($topic_id);
 		$author_id = bbp_get_topic_author_id($topic_id);
 		$all_topic_data['author_id'] = $author_id;
-		$all_topic_data['author_avatar'] = get_avatar_url_2($author_id);
+		if ($author_id !== 0) {
+			$all_topic_data['author_avatar'] = get_avatar_url_2($author_id);
+		} else {
+			$all_topic_data['author_avatar'] = get_avatar_url_2(bbp_get_topic_author_email($topic_id));
+		}
 		$all_topic_data['post_date'] = bbp_get_topic_post_date($topic_id);
 		$all_topic_data['is_sticky'] = bbp_is_topic_sticky($topic_id);
 		$all_topic_data['is_super_sticky'] = bbp_is_topic_super_sticky($topic_id);
@@ -409,8 +413,14 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 			$reply_id = (int)$comment->ID;
 			$res["userid"] = (int)$post_author_id;
 			$res["id"] = $reply_id;
-			$res["author_name"] = get_user_meta($post_author_id, 'nickname', true);
-			$res["author_avatar"] = get_avatar_url_2($post_author_id);
+			// 判断用户是否是匿名评论
+			if ($post_author_id != 0) {
+				$res["author_name"] = get_user_meta($post_author_id, 'nickname', true);
+				$res["author_avatar"] = get_avatar_url_2($post_author_id);
+			} else {
+				$res["author_name"] = get_post_meta($reply_id, '_bbp_anonymous_name', true);
+				$res["author_avatar"] = get_avatar_url_2(get_post_meta($reply_id, '_bbp_anonymous_email', true));
+			}
 			$res["post_date"] = time_tran($comment->post_date);
 			$res["content"] = $comment->post_content;
 			$res["child"] = $this->get_child_comment($topic_id, $reply_id);
@@ -432,11 +442,16 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 			$reply_id = (int)$comment->ID;
 			$res["userid"] = (int)$post_author_id;
 			$res["id"] = $reply_id;
-			$res["author_name"] = get_user_meta($post_author_id, 'nickname', true);
-			$res["author_avatar"] = get_avatar_url_2($post_author_id);
+			// 判断用户是否是匿名评论
+			if ($post_author_id != 0) {
+				$res["author_name"] = get_user_meta($post_author_id, 'nickname', true);
+				$res["author_avatar"] = get_avatar_url_2($post_author_id);
+			} else {
+				$res["author_name"] = get_post_meta($reply_id, '_bbp_anonymous_name', true);
+				$res["author_avatar"] = get_avatar_url_2(get_post_meta($reply_id, '_bbp_anonymous_email', true));
+			}
 			$res["post_date"] = time_tran($comment->post_date);
 			$res["content"] = $comment->post_content;
-			$order = "asc";
 			$res["child"] = $this->get_child_comment($topic_id, $reply_id);
 			$comments_list[] = $res;
 
@@ -498,7 +513,8 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 			$code = "1";
 
 			//需要审核显示
-			if (!empty($raw_enable_topic_check)) {
+			$uni_enable_forum_censorship = get_option('uni_enable_forum_censorship');
+			if (!empty($uni_enable_forum_censorship)) {
 				$message = "提交成功,管理员审核通过后方可显示";
 				$code = "2";
 			}
@@ -552,7 +568,7 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 			$code = "1";
 
 			if (!empty($uni_enable_forum_censorship)) {
-				$message = "提交成功,管理员审核通过后方可显示.";
+				$message = "提交成功,管理员审核通过后方可显示";
 				$code = "2";    //需要审核显示
 			}
 
