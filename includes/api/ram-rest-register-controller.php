@@ -160,6 +160,7 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 		session_start(["name" => "token", "use_cookies" => false]);
 		$token = session_id();
 		$_SESSION["graphic_captcha_challenge_count"] = 0;
+		$_SESSION["email_send_count"] = 0; // 重置邮件发送计数
 		$_SESSION["uni_captcha"] = $cap_code;
 		$_SESSION["uni_captcha_date"] = time();
 
@@ -178,10 +179,18 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 		session_id($token);
 		session_start(["name" => "token", "use_cookies" => false]);
 		$_SESSION["email_captcha_challenge_count"] = 0;  // 重置邮件验证码尝试次数
+		$_SESSION["email_send_count"] = empty($_SESSION["email_send_count"]) ? 1 : $_SESSION["email_send_count"] + 1;
 
 		if (empty($_SESSION)) {
 			$res["code"] = "4001";
 			// 实际上是session过期了
+			$res["message"] = "验证码过期";
+			session_destroy();
+			return rest_ensure_response($res);
+		}
+		if ($_SESSION["email_send_count"] > 5) {
+			// 一个验证码最多允许尝试发送5次邮件，5次后过期重新获取验证码
+			$res["code"] = "4001";
 			$res["message"] = "验证码过期";
 			session_destroy();
 			return rest_ensure_response($res);
