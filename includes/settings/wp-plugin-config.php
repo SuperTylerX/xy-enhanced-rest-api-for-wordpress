@@ -24,13 +24,17 @@ function get_jquery_source() {
 
 
 function register_weixinappsettings() {
-	// 微信ID和秘钥设置
+	// 微信ID和密钥设置
 	register_setting('uniapp-group', 'wf_appid');
 	register_setting('uniapp-group', 'wf_secret');
 
-	// QQ ID和秘钥设置
+	// QQ ID和密钥设置
 	register_setting('uniapp-group', 'wf_qq_appid');
 	register_setting('uniapp-group', 'wf_qq_secret');
+
+	// 字节跳动 ID和密钥设置
+	register_setting('uniapp-group', 'uni_bytedance_appid');
+	register_setting('uniapp-group', 'uni_bytedance_secret');
 
 	// 商户号
 	register_setting('uniapp-group', 'wf_mchid');
@@ -40,11 +44,12 @@ function register_weixinappsettings() {
 	// 评论是否开启
 	register_setting('uniapp-group', 'wf_enable_comment_option');
 	register_setting('uniapp-group', 'wf_enable_qq_comment_option');
+	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option');
 	register_setting('uniapp-group', 'uni_enable_h5_comment_option');
 
 	register_setting('uniapp-group', 'uni_show_comment_location');
 
-    register_setting('uniapp-group', 'wf_praise_word');
+	register_setting('uniapp-group', 'wf_praise_word');
 	register_setting('uniapp-group', 'wf_weixin_enterprise_minapp');
 	register_setting('uniapp-group', 'wf_qq_enterprise_minapp');
 
@@ -135,11 +140,11 @@ function weixinapp_settings_page() {
                         <tr valign="top">
                             <th scope="row">是否开启显示评论IP位置</th>
                             <td>
-			                    <?php
-			                    $uni_show_comment_location = get_option('uni_show_comment_location');
-			                    $is_uni_show_comment_location = empty($uni_show_comment_location) ? '' : 'checked';
-			                    echo '<input name="uni_show_comment_location"  type="checkbox" ' . $is_uni_show_comment_location . ' />';
-			                    ?>
+								<?php
+								$uni_show_comment_location = get_option('uni_show_comment_location');
+								$is_uni_show_comment_location = empty($uni_show_comment_location) ? '' : 'checked';
+								echo '<input name="uni_show_comment_location"  type="checkbox" ' . $is_uni_show_comment_location . ' />';
+								?>
                             </td>
                         </tr>
 
@@ -148,7 +153,8 @@ function weixinapp_settings_page() {
                             <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
                                        value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
                                 <br/>
-                                <p style="color: #959595 ; display:inline">* 文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
+                                <p style="color: #959595 ; display:inline">*
+                                    文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
                             </td>
                         </tr>
 
@@ -225,7 +231,8 @@ function weixinapp_settings_page() {
                                     <textarea name="wf_business_domain" id="wf_business_domain" class="large-text code"
                                               rows="3"><?php echo esc_attr(get_option('wf_business_domain')); ?></textarea>
                                 <br/>
-                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
+                                <p style="color: #959595; display:inline">
+                                    请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
                             </td>
                         </tr>
                     </table>
@@ -274,7 +281,7 @@ function weixinapp_settings_page() {
 
 
                         <tr valign="top">
-                            <th scope="row">开启小程序的评论</th>
+                            <th scope="row">开启微信小程序的评论</th>
                             <td>
 								<?php
 								$wf_enable_comment_option = get_option('wf_enable_comment_option');
@@ -304,8 +311,8 @@ function weixinapp_settings_page() {
 								echo '<input name="wf_list_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                                 &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_list_ad_id"
-                                                                          style="width:300px; height:40px"
-                                                                          value="<?php echo esc_attr(get_option('wf_list_ad_id')); ?>"/>
+                                                                            style="width:300px; height:40px"
+                                                                            value="<?php echo esc_attr(get_option('wf_list_ad_id')); ?>"/>
                                 <br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;每<input
                                         type="number" name="wf_list_ad_every" style="width:40px; height:40px"
                                         value="<?php echo esc_attr(get_option('wf_list_ad_every')); ?>"/>条列表展示一条广告<br/>
@@ -324,8 +331,8 @@ function weixinapp_settings_page() {
 								echo '<input name="wf_detail_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                                 &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_detail_ad_id"
-                                                                          style="width:300px; height:40px"
-                                                                          value="<?php echo esc_attr(get_option('wf_detail_ad_id')); ?>"/>
+                                                                            style="width:300px; height:40px"
+                                                                            value="<?php echo esc_attr(get_option('wf_detail_ad_id')); ?>"/>
                             </td>
                         </tr>
 
@@ -417,7 +424,7 @@ function weixinapp_settings_page() {
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row">开启小程序的评论</th>
+                            <th scope="row">开启QQ小程序的评论</th>
                             <td>
 								<?php
 								$wf_enable_qq_comment_option = get_option('wf_enable_qq_comment_option');
@@ -440,6 +447,38 @@ function weixinapp_settings_page() {
                     </table>
                 </div>
 
+                <h2>头条小程序设置</h2>
+                <div class="section">
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">AppID</th>
+                            <td><input type="text" name="uni_bytedance_appid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_bytedance_appid')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">AppSecret</th>
+                            <td><input type="text" name="uni_bytedance_secret" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_bytedance_secret')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">开启头条小程序的评论</th>
+                            <td>
+								<?php
+								$uni_enable_bytedance_comment_option = get_option('uni_enable_bytedance_comment_option');
+								$checkbox = empty($uni_enable_bytedance_comment_option) ? '' : 'checked';
+								echo '<input name="uni_enable_bytedance_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+
                 <h2>APP设置</h2>
                 <div class="section">
                     <table class="form-table">
@@ -459,7 +498,8 @@ function weixinapp_settings_page() {
                                        style="width:400px; height:40px"
                                        id="uni_app_updated_version_code"
                                        value="<?php echo esc_attr(get_option('uni_app_updated_version_code')); ?>"/>
-                                <p style="color: #959595; display:inline">*版本号用于开发者区分，请使用纯数字表示，形式类似于"120"</p>
+                                <p style="color: #959595; display:inline">
+                                    *版本号用于开发者区分，请使用纯数字表示，形式类似于"120"</p>
                             </td>
                         </tr>
 

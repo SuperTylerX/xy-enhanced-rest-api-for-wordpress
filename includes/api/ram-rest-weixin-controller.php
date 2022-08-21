@@ -148,7 +148,7 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 			$meta_input["avatar"] = $avatarUrl;
 			// 设定关联平台信息
 			$meta_input["social_connect"] = serialize(array(
-				"weixin" => "$nickname"
+				"wechat" => "$nickname"
 			));
 			// 第一次登录，创建新用户
 			$userId = wp_insert_user(array(
@@ -158,7 +158,7 @@ class RAM_REST_Weixin_Controller extends WP_REST_Controller {
 				'user_nicename' => $_nickname,
 				'display_name' => $nickname,
 				'user_pass' => null,
-				'user_email' => $openId . '@wechat.com',
+//				'user_email' => $openId . '@wechat.com',
 				'meta_input' => $meta_input
 			));
 			if (is_wp_error($userId) || empty($userId) || $userId == 0) {

@@ -2,17 +2,26 @@
 // 禁止直接访问
 if (!defined('ABSPATH')) exit;
 
-// 在用户列表添加头像列
+// 在用户列表添加自定义列
 function users_columns($columns) {
-	$columns['avatar'] = __('头像');
+	$columns['platform'] = __('绑定平台');
 	return $columns;
 }
 
 function output_users_columns($var, $columnName, $userId) {
 	switch ($columnName) {
-		case "avatar":
-			return get_avatar_2($userId);
+		case "platform":
+			$platform = unserialize(get_user_meta($userId, 'social_connect', true));
+			$output = "";
+			if (!empty($platform)) {
+				foreach ($platform as $key => $value) {
+					$output .= $key . "：" . $value . "<br/>";
+				}
+			}
+			return $output;
 			break;
+		default:
+			return $columnName;
 	}
 }
 

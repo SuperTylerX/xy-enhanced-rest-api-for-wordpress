@@ -23,7 +23,8 @@ include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-util.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-wechat-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-qq-api.php');
-include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-wechat-config.php');
+include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-bytedance-api.php');
+include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-plugin-config.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-post-config.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-tinymce-add-button.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/filter/ram-custom-comment-fields.php');
@@ -42,6 +43,7 @@ if (!class_exists('RestAPIMiniProgram')) {
 
 		public $WechatAPI;
 		public $QQAPI;
+		public $ByteDanceAPI;
 
 		public function __construct() {
 			//定制化内容输出，对pc端和api都生效
@@ -95,6 +97,7 @@ if (!class_exists('RestAPIMiniProgram')) {
 			// 将小程序服务端API加入到全局中
 			$this->WechatAPI = new UniWechatAPI();
 			$this->QQAPI = new UniQQAPI();
+			$this->ByteDanceAPI = new UniByteDanceAPI();
 		}
 	}
 

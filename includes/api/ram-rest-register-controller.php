@@ -41,7 +41,7 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 						'required' => true
 					),
 					'email' => array(
-						'required' => true
+						'required' => true,
 					)
 				)
 			),
@@ -98,6 +98,44 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 					'password' => array(
 						'required' => true
 					)
+				)
+			),
+			'schema' => array($this, 'get_public_item_schema'),
+		));
+
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/updateEmail', array(
+			array(
+				'methods' => 'POST',
+				'callback' => array($this, 'update_email'),
+				'args' => array(
+					'token' => array(
+						'required' => true,
+						'type' => 'string',
+					),
+					'graphicCaptcha' => array(
+						'required' => true,
+						'description' => '图形验证码',
+						'type' => 'string',
+						'validate_callback' => function ($param) {
+							return preg_match('/^[A-Z0-9]{4}$/', $param);
+						},
+					),
+					'emailCaptcha' => array(
+						'required' => true,
+						'description' => '邮箱验证码',
+						'type' => 'string',
+						'validate_callback' => function ($param) {
+							return preg_match('/^[0-9]{6}$/', $param);
+						},
+					),
+					'email' => array(
+						'required' => true,
+						'description' => '新邮箱',
+						'type' => 'string',
+						'validate_callback' => function ($param) {
+							return is_email($param);
+						},
+					),
 				)
 			),
 			'schema' => array($this, 'get_public_item_schema'),
@@ -390,6 +428,82 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 
 		$res["code"] = "200";
 		$res["message"] = "更新密码成功";
+		session_destroy();
+		return rest_ensure_response($res);
+	}
+
+	function update_email($request) {
+		$graphicCaptcha = $request["graphicCaptcha"];
+		$emailCaptcha = $request["emailCaptcha"];
+		$email = $request["email"];
+		$token = $request["token"];
+
+		session_id($token);
+		session_start(["name" => "token", "use_cookies" => false]);
+
+		if (empty($_SESSION)) {
+			$res["code"] = "4001";
+			// 实际上是session过期了
+			$res["message"] = "验证码过期";
+			session_destroy();
+			return rest_ensure_response($res);
+		}
+
+		$server_side_captcha = $_SESSION["uni_captcha"];
+		$server_side_captcha_email = $_SESSION["uni_captcha_email"];
+		$server_side_captcha_email_code = $_SESSION["uni_captcha_email_code"];
+		$server_side_captcha_email_date = $_SESSION["uni_captcha_email_date"];
+
+		// 也许在某些情况下，SESSION并没有自动过期，于是使用存储的时间戳进行比较
+		if (time() - $server_side_captcha_email_date > 1000 * 60 * $this->max_duration) {
+			$res["code"] = "4002";
+			$res["message"] = "验证码过期";
+			session_destroy();
+			return rest_ensure_response($res);
+		}
+
+		// 验证码尝试失败，最多进行5次尝试
+		if ($server_side_captcha_email_code !== $emailCaptcha ||
+			$server_side_captcha !== $graphicCaptcha ||
+			$server_side_captcha_email !== $email
+		) {
+			$res["code"] = "4000";
+			$res["message"] = "验证码错误";
+			$_SESSION["email_captcha_challenge_count"] += 1;
+			if ($_SESSION["email_captcha_challenge_count"] > 5) {
+				// 图形验证码最多允许尝试5次，5次后过期重新获取
+				$res["code"] = "4001";
+				$res["message"] = "验证码过期";
+				session_destroy();
+				return rest_ensure_response($res);
+			}
+			// 验证码错误，但是允许再次尝试
+			return rest_ensure_response($res);
+		}
+
+		// 验证成功，更新用户邮箱
+
+		$current_user = wp_get_current_user();
+
+		if ($current_user === false) {
+			$res["code"] = "5000";
+			$res["message"] = "您尚未登录";
+			session_destroy();
+			return rest_ensure_response($res);
+		}
+		$userId = wp_update_user(array(
+			'user_email' => $email,
+			'ID' => $current_user->ID
+		));
+		if (is_wp_error($userId)) {
+			$res["code"] = "5000";
+			$res["message"] = $userId->get_error_message();
+			session_destroy();
+			return rest_ensure_response($res);
+		}
+
+		$res["code"] = "200";
+		$res["message"] = "更新邮箱成功";
 		session_destroy();
 		return rest_ensure_response($res);
 	}

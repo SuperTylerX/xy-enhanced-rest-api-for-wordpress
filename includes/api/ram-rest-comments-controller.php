@@ -286,6 +286,24 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 				if ($errcode == 87014) {
 					return new WP_Error($errcode, "内容违规", array('status' => 403));
 				}
+			} else if ($platform === 'MP-TOUTIAO') {
+				$data = [
+					'tasks' => [
+						[
+							'content' => $content
+						]
+					]
+				];
+				$msgSecCheckResult = UniRestAPIInstance()->ByteDanceAPI->msgSecCheck($data);
+
+				$code = $msgSecCheckResult['data'][0]['code'];
+				if ($code !== 0) {
+					return new WP_Error($code, "内容检测失败", array('status' => 403));
+				}
+				if ($msgSecCheckResult['data'][0]['predicts'][0]['hit']) {
+					// 下面这个会报500错误 离谱！！
+					return new WP_Error($code, "内容违规", array('status' => 403));
+				}
 			}
 		}
 
@@ -331,8 +349,7 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			$result["level"] = $userLevel;
 			$result['comment_approved'] = $comment_approved;
 			$result["message"] = $message;
-			$response = rest_ensure_response($result);
-			return $response;
+			return rest_ensure_response($result);
 		}
 	}
 
