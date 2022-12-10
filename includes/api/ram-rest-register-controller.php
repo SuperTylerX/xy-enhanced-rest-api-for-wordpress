@@ -141,6 +141,25 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/unbindSocial', array(
+			array(
+				'methods' => 'POST',
+				'callback' => array($this, 'unbind_social'),
+				'validate_callback' => array($this, 'jwt_permissions_check'),
+				'args' => array(
+					'platform' => array(
+						'required' => true,
+						'description' => '解绑平台',
+						'type' => 'string',
+						'validate_callback' => function ($param) {
+							return in_array($param, array('wechat', 'qq', 'bytedance'));
+						},
+					),
+				)
+			),
+			'schema' => array($this, 'get_public_item_schema'),
+		));
+
 	}
 
 	function getGraphicCaptcha($request) {
@@ -508,6 +527,68 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 		return rest_ensure_response($res);
 	}
 
+	function unbind_social($request) {
+		$current_user = wp_get_current_user();
+		$ID = $current_user->ID;
+
+		// 检查用户是否已经绑定了邮箱
+		if (empty($current_user->user_email)) {
+			$res["code"] = "500";
+			$res["message"] = "您尚未绑定邮箱";
+			return rest_ensure_response($res);
+		}
+
+		// 获取用户需要解绑的平台
+		$platform = $request["platform"];
+
+		// 罗列已有的平台
+		switch ($platform) {
+			case "qq":
+				// 删除meta信息
+				delete_user_meta($ID, "qq_unionid");
+				delete_user_meta($ID, "qq_mini_openid");
+				delete_user_meta($ID, "qq_app_openid");
+				delete_user_meta($ID, "qq_h5_openid");
+				// 更新社交互联信息
+				$social_connect = unserialize(get_user_meta($ID, "social_connect"));
+				unset($social_connect["qq"]);
+				update_user_meta($ID, "social_connect", serialize($social_connect));
+
+				break;
+			case "wechat":
+				// 删除meta信息
+				delete_user_meta($ID, "wx_unionid");
+				delete_user_meta($ID, "wx_mini_openid");
+				delete_user_meta($ID, "wx_app_openid");
+				delete_user_meta($ID, "wx_h5_openid");
+				// 更新社交互联信息
+				$social_connect = unserialize(get_user_meta($ID, "social_connect"));
+				unset($social_connect["wechat"]);
+				update_user_meta($ID, "social_connect", serialize($social_connect));
+
+				break;
+			case "bytedance":
+				// 删除meta信息
+				delete_user_meta($ID, "bytedance_unionid");
+				delete_user_meta($ID, "bytedance_mini_openid");
+				// 更新社交互联信息
+				$social_connect = unserialize(get_user_meta($ID, "social_connect"));
+				unset($social_connect["bytedance"]);
+				update_user_meta($ID, "social_connect", serialize($social_connect));
+
+				break;
+			default:
+				$res["code"] = "500";
+				$res["message"] = "未查找到平台";
+				return rest_ensure_response($res);
+
+		}
+
+		$res["code"] = "200";
+		$res["message"] = "解绑成功";
+		return rest_ensure_response($res);
+	}
+
 	function get_email_captcha_permission_check($request) {
 		// 校验网站是否关闭了用户注册
 		if (get_option('users_can_register') === "0") {
@@ -568,6 +649,15 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 		}
 		if (strlen($password) > 20 || strlen($password) < 6) {
 			return false;
+		}
+		return true;
+	}
+
+	public function jwt_permissions_check($request) {
+		$current_user = wp_get_current_user();
+		$ID = $current_user->ID;
+		if ($ID == 0) {
+			return new WP_Error('error', '尚未登录或Token无效', array('status' => 400));
 		}
 		return true;
 	}
