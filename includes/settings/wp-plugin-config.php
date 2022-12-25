@@ -36,6 +36,11 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'uni_bytedance_appid');
 	register_setting('uniapp-group', 'uni_bytedance_secret');
 
+	// 百度ID和密钥设置
+	register_setting('uniapp-group', 'uni_baidu_appid');
+	register_setting('uniapp-group', 'uni_baidu_secret');
+	register_setting('uniapp-group', 'uni_baidu_key');
+
 	// 商户号
 	register_setting('uniapp-group', 'wf_mchid');
 	register_setting('uniapp-group', 'wf_paykey');
@@ -45,6 +50,7 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'wf_enable_comment_option');
 	register_setting('uniapp-group', 'wf_enable_qq_comment_option');
 	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option');
+	register_setting('uniapp-group', 'uni_enable_baidu_comment_option');
 	register_setting('uniapp-group', 'uni_enable_h5_comment_option');
 
 	register_setting('uniapp-group', 'uni_show_comment_location');
@@ -478,6 +484,43 @@ function weixinapp_settings_page() {
                     </table>
                 </div>
 
+                <h2>百度小程序设置</h2>
+                <div class="section">
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">AppID</th>
+                            <td><input type="text" name="uni_baidu_appid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_appid')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">AppSecret</th>
+                            <td><input type="text" name="uni_baidu_secret" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_secret')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">AppKey</th>
+                            <td><input type="text" name="uni_baidu_key" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_key')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">开启百度小程序的评论</th>
+                            <td>
+								<?php
+								$uni_enable_baidu_comment_option = get_option('uni_enable_baidu_comment_option');
+								$checkbox = empty($uni_enable_baidu_comment_option) ? '' : 'checked';
+								echo '<input name="uni_enable_baidu_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
 
                 <h2>APP设置</h2>
                 <div class="section">

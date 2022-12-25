@@ -544,6 +544,16 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 					// 下面这个会报500错误 离谱！！
 					return new WP_Error($code, "内容违规", array('status' => 403));
 				}
+			} else if ($platform === 'MP-BAIDU') {
+				$data = [
+					'content' => $content,
+					'type' => ["risk", "lead"]
+				];
+				$msgSecCheckResult = UniRestAPIInstance()->BaiduAPI->msgSecCheck($data);
+				$errcode = $msgSecCheckResult['errno'];
+				if ($errcode == 82593) {
+					return new WP_Error($errcode, "内容违规", array('status' => 403));
+				}
 			}
 		}
 
@@ -658,6 +668,16 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 				if ($msgSecCheckResult['data'][0]['predicts'][0]['hit']) {
 					// 下面这个会报500错误 离谱！！
 					return new WP_Error($code, "内容违规", array('status' => 403));
+				}
+			} else if ($platform === 'MP-BAIDU') {
+				$data = [
+					'content' => $content,
+					'type' => ["risk", "lead"]
+				];
+				$msgSecCheckResult = UniRestAPIInstance()->BaiduAPI->msgSecCheck($data);
+				$errcode = $msgSecCheckResult['errno'];
+				if ($errcode == 82593) {
+					return new WP_Error($errcode, "内容违规", array('status' => 403));
 				}
 			}
 		}

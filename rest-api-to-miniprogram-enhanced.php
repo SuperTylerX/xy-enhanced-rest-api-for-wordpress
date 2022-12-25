@@ -24,6 +24,7 @@ include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-wechat-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-qq-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-bytedance-api.php');
+include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-baidu-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-plugin-config.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-post-config.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-tinymce-add-button.php');
@@ -98,6 +99,7 @@ if (!class_exists('RestAPIMiniProgram')) {
 			$this->WechatAPI = new UniWechatAPI();
 			$this->QQAPI = new UniQQAPI();
 			$this->ByteDanceAPI = new UniByteDanceAPI();
+			$this->BaiduAPI = new UniBaiduAPI();
 		}
 	}
 
