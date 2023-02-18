@@ -55,7 +55,6 @@ defined('ABSPATH') || exit;
 </head>
 <body>
 <div class="container login js login-action-login wp-core-ui" id="app">
-
     <div id="login">
         <p class="message" style="margin-top: 10px;">请使用APP或者小程序扫描二维码登录</p>
         <form name="loginform" id="loginform">
@@ -99,78 +98,79 @@ defined('ABSPATH') || exit;
             <a href="<?php echo site_url('wp-login.php') ?>">&larr; 使用账户密码登录</a>
         </p>
     </div>
+</div>
 
-    <script>
-        const sleep = time => new Promise((resolve) => setTimeout(resolve, time));
+<script>
+    const sleep = time => new Promise((resolve) => setTimeout(resolve, time));
 
-        const fetchQRStatus = token => axios.post('<?php echo site_url('/wp-json/uni-app-rest-enhanced/v1/login/getQRStatus') ?>', {
-            token
-        })
-            .then(data => data.data)
+    const fetchQRStatus = token => axios.post('<?php echo site_url('/wp-json/uni-app-rest-enhanced/v1/login/getQRStatus') ?>', {
+        token
+    })
+        .then(data => data.data)
 
-        new Vue({
-            el: '#app',
-            data() {
-                return {
-                    qrcodeImg: '',
-                    token: '',
-                    state: 0
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                qrcodeImg: '',
+                token: '',
+                state: 0
+            }
+        },
+        methods: {
+            async fetchQRCode() {
+                this.state = 0
+                try {
+                    const res = await axios.post('<?php echo site_url('/wp-json/uni-app-rest-enhanced/v1/login/getQRToken') ?>')
+                        .then(data => data.data)
+                    const arg = JSON.stringify(res)
+                    // this.qrcodeImg = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(arg)
+                    this.qrcodeImg = await QRCode.toDataURL(arg, {margin: 0, width: 450})
+                    this.token = res.token
+                    this.getQRStatus()
+
+                } catch (e) {
+                    console.error(e)
                 }
             },
-            methods: {
-                async fetchQRCode() {
-                    this.state = 0
+            async getQRStatus() {
+                while (true) {
                     try {
-                        const res = await axios.post('<?php echo site_url('/wp-json/uni-app-rest-enhanced/v1/login/getQRToken') ?>')
-                            .then(data => data.data)
-                        const arg = JSON.stringify(res)
-                        // this.qrcodeImg = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(arg)
-                        this.qrcodeImg = await QRCode.toDataURL(arg, {margin: 0, width: 450})
-                        this.token = res.token
-                        this.getQRStatus()
-
-                    } catch (e) {
-                        console.error(e)
-                    }
-                },
-                async getQRStatus() {
-                    while (true) {
-                        try {
-                            const res = await fetchQRStatus(this.token)
-                            if (res.status === 1) {
-                                // 扫描成功，显示扫描成功遮罩
-                                this.state = 1
-                            } else if (res.status === 2) {
-                                // 登录成功，重定向到登录前页面
-                                window.location.href = '<?php echo site_url($wp->request) ?>'
-                                break
-                            } else if (res.status === 3) {
-                                // 取消登录，显示二维码过期
-                                this.showInvalidQRCode()
-                                break
-                            } else if (res.status === -1) {
-                                // 二维码过期，重新获取二维码
-                                this.showInvalidQRCode()
-                                break
-                            }
-                            await sleep(1000)
-                        } catch (e) {
-                            // console.error(e)
-                            // 二维码失效或过期，让用户点击重新获取
+                        const res = await fetchQRStatus(this.token)
+                        if (res.status === 1) {
+                            // 扫描成功，显示扫描成功遮罩
+                            this.state = 1
+                        } else if (res.status === 2) {
+                            // 登录成功，重定向到登录前页面
+                            window.location.href = '<?php echo site_url($wp->request) ?>'
+                            break
+                        } else if (res.status === 3) {
+                            // 取消登录，显示二维码过期
+                            this.showInvalidQRCode()
+                            break
+                        } else if (res.status === -1) {
+                            // 二维码过期，重新获取二维码
                             this.showInvalidQRCode()
                             break
                         }
+                        await sleep(1000)
+                    } catch (e) {
+                        // console.error(e)
+                        // 二维码失效或过期，让用户点击重新获取
+                        this.showInvalidQRCode()
+                        break
                     }
-
-                },
-                showInvalidQRCode() {
-                    this.state = 3
                 }
+
             },
-            mounted() {
-                this.fetchQRCode()
+            showInvalidQRCode() {
+                this.state = 3
             }
-        })
-    </script>
+        },
+        mounted() {
+            this.fetchQRCode()
+        }
+    })
+</script>
 </body>
 </html>
