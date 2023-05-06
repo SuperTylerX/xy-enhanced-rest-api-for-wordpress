@@ -184,58 +184,58 @@ function get_avatar_url_2($id_or_email) {
 }
 
 // 重写get_avatar函数
-function get_avatar($id_or_email, $size = 96, $default = '', $alt = '', $args = null) {
-	if ($id_or_email instanceof WP_User) {
-		$id_or_email = $id_or_email->ID;
-	}
-	if ($id_or_email instanceof WP_Post) {
-		$id_or_email = $id_or_email->post_author;
-	}
-	if ($id_or_email instanceof WP_Comment) {
-		$id_or_email = $id_or_email->user_id;
-	}
-
-	$avatar = get_avatar_url_2($id_or_email);
-
-	// 设置头像 class
-	$args['size'] = (int)$size;
-	$class = array('avatar', 'avatar-' . (int)$args['size'], 'photo');
-	$args = get_avatar_data($id_or_email, $args);
-	if (!$args['found_avatar'] || $args['force_default']) {
-		$class[] = 'avatar-default';
-	}
-	if ($args['class']) {
-		if (is_array($args['class'])) {
-			$class = array_merge($class, $args['class']);
-		} else {
-			$class[] = $args['class'];
-		}
-	}
-
-	// Add `loading` attribute.
-	$extra_attr = $args['extra_attr'];
-	$loading = $args['loading'];
-
-	if (in_array($loading, array('lazy', 'eager'), true) && !preg_match('/\bloading\s*=/', $extra_attr)) {
-		if (!empty($extra_attr)) {
-			$extra_attr .= ' ';
-		}
-
-		$extra_attr .= "loading='{$loading}'";
-	}
-
-	$avatar_html = sprintf(
-		"<img alt='%s' src='%s' class='%s' height='%d' width='%d' %s/>",
-		esc_attr($args['alt']),
-		esc_url($avatar),
-		esc_attr(implode(' ', $class)),
-		(int)$args['height'],
-		(int)$args['width'],
-		$extra_attr
-	);
-
-	return apply_filters('get_avatar', $avatar_html, $id_or_email, $args['size'], $args['default'], $args['alt'], $args);
-}
+//function get_avatar($id_or_email, $size = 96, $default = '', $alt = '', $args = null) {
+//	if ($id_or_email instanceof WP_User) {
+//		$id_or_email = $id_or_email->ID;
+//	}
+//	if ($id_or_email instanceof WP_Post) {
+//		$id_or_email = $id_or_email->post_author;
+//	}
+//	if ($id_or_email instanceof WP_Comment) {
+//		$id_or_email = $id_or_email->user_id;
+//	}
+//
+//	$avatar = get_avatar_url_2($id_or_email);
+//
+//	// 设置头像 class
+//	$args['size'] = (int)$size;
+//	$class = array('avatar', 'avatar-' . (int)$args['size'], 'photo');
+//	$args = get_avatar_data($id_or_email, $args);
+//	if (!$args['found_avatar'] || $args['force_default']) {
+//		$class[] = 'avatar-default';
+//	}
+//	if ($args['class']) {
+//		if (is_array($args['class'])) {
+//			$class = array_merge($class, $args['class']);
+//		} else {
+//			$class[] = $args['class'];
+//		}
+//	}
+//
+//	// Add `loading` attribute.
+//	$extra_attr = $args['extra_attr'];
+//	$loading = $args['loading'];
+//
+//	if (in_array($loading, array('lazy', 'eager'), true) && !preg_match('/\bloading\s*=/', $extra_attr)) {
+//		if (!empty($extra_attr)) {
+//			$extra_attr .= ' ';
+//		}
+//
+//		$extra_attr .= "loading='{$loading}'";
+//	}
+//
+//	$avatar_html = sprintf(
+//		"<img alt='%s' src='%s' class='%s' height='%d' width='%d' %s/>",
+//		esc_attr($args['alt']),
+//		esc_url($avatar),
+//		esc_attr(implode(' ', $class)),
+//		(int)$args['height'],
+//		(int)$args['width'],
+//		$extra_attr
+//	);
+//
+//	return apply_filters('get_avatar', $avatar_html, $id_or_email, $args['size'], $args['default'], $args['alt'], $args);
+//}
 
 function get_content_post($url, $post_data = array(), $header = array()) {
 	$ch = curl_init();
