@@ -61,7 +61,7 @@ if (!class_exists('RestAPIMiniProgram')) {
 			//添加管理用户头像列
 			add_filter('manage_users_columns', 'users_columns');
 			add_action('manage_users_custom_column', 'output_users_columns', 10, 3);
-
+			add_action('admin_enqueue_scripts', 'custom_user_avatar_text_custom_css');
 			// 添加用户自定义输出
 			add_filter('rest_prepare_user', 'addCustomUserField', 10, 3);
 
