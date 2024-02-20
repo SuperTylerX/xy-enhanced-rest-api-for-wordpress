@@ -331,7 +331,7 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 
 			$post_id = $post->ID;
 			$_data["id"] = $post_id;
-			$_data["title"] = $post->post_title;
+			$_data["title"] = ['rendered' => $post->post_title];
 			$_data["post_medium_image"] = getPostImages($post->post_content, $post->ID)["post_medium_image"];
 			// 添加日期
 			$post_date = $post->post_date;
@@ -357,15 +357,12 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 
 		$result["code"] = "success";
 		$result["message"] = "获取我点赞的文章成功";
-		$result["status"] = "200";
 		$result["data"] = $posts;
 
-		$response = rest_ensure_response($result);
-		return $response;
+		return rest_ensure_response($result);
 	}
 
 	public function postLike($request) {
-
 		$postid = $request['postid'];
 		$current_user = wp_get_current_user();
 		$userid = $current_user->ID;
@@ -374,44 +371,56 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 		$postApprovalCount = get_post_meta($postid, 'postApprovalCount', true);
 		$userApprovalPosts = get_user_meta($userid, 'userApprovalPosts', true);
 
+		$result = array();
 		if (empty($postApprovalUsers)) {
 			$postApprovalUsers = [$userid];
 			$postApprovalCount = 1;
+
+			if (empty($userApprovalPosts)) {
+				$userApprovalPosts = [$postid];
+			} else {
+				$userApprovalPosts[] = $postid;
+			}
+			$result["code"] = "like_success";
+			$result["message"] = "点赞成功";
 		} else {
 			if (!in_array($userid, $postApprovalUsers)) {
-				array_push($postApprovalUsers, $userid);
+				$postApprovalUsers[] = $userid;
 				$postApprovalCount += 1;
+
+				if (empty($userApprovalPosts)) {
+					$userApprovalPosts = [$postid];
+				} else {
+					$userApprovalPosts[] = $postid;
+				}
+
+				$result["code"] = "like_success";
+				$result["message"] = "点赞成功";
 			} else {
-				$result["code"] = "success";
-				$result["message"] = "已经点赞";
-				$result["status"] = "501";
-				$response = rest_ensure_response($result);
-				return $response;
+				$key = array_search($userid, $postApprovalUsers);
+				unset($postApprovalUsers[$key]);
+				$postApprovalCount -= 1;
+
+				$key = array_search($postid, $userApprovalPosts);
+				unset($userApprovalPosts[$key]);
+
+				$result["code"] = "cancel_like_success";
+				$result["message"] = "取消点赞成功";
 			}
-		}
-		if (empty($userApprovalPosts)) {
-			$userApprovalPosts = [$postid];
-		} else {
-			array_push($userApprovalPosts, $postid);
 		}
 
 		if (update_post_meta($postid, 'postApprovalUsers', $postApprovalUsers) &&
 			update_post_meta($postid, 'postApprovalCount', $postApprovalCount) &&
 			update_user_meta($userid, 'userApprovalPosts', $userApprovalPosts)
 		) {
-
 			if (function_exists('MRAC')) {
 				$cachedata = MRAC()->cacheManager->delete_cache('post', $postid);
 			}
-			$result["code"] = "success";
-			$result["message"] = "点赞成功 ";
-			$result["status"] = "200";
 		} else {
 			return new WP_Error('error', '点赞失败', array('status' => "500"));
 		}
 
-		$response = rest_ensure_response($result);
-		return $response;
+		return rest_ensure_response($result);
 	}
 
 	public function jwt_permissions_check($request) {
