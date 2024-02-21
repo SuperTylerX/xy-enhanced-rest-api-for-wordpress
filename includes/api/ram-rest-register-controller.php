@@ -160,6 +160,22 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
+		// 上传头像
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/uploadAvatar', array(
+			array(
+				'methods' => 'POST',
+				'callback' => array($this, 'handle_avatar_upload'),
+				'permission_callback' => array($this, 'jwt_permissions_check'),
+				'args' => array(
+					'avatar' => array(
+						'required' => true,
+						'description' => '头像数据',
+						'type' => 'string',
+					),
+				)
+			),
+			'schema' => array($this, 'get_public_item_schema'),
+		));
 	}
 
 	function getGraphicCaptcha($request) {
@@ -651,6 +667,70 @@ class RAM_REST_Register_Controller extends WP_REST_Controller {
 			return false;
 		}
 		return true;
+	}
+
+	function handle_avatar_upload($request) {
+		// Check if avatar data is provided
+		$avatar_data_base64 = $request->get_param('avatar');
+
+		// 移除base64头部
+		$avatar_data_base64_no_head = preg_replace('/^data:image\/\w+;base64,/', '', $avatar_data_base64);
+
+		// Decode the base64 avatar data
+		$avatar_data = base64_decode($avatar_data_base64_no_head);
+
+		// Get current user ID
+		$user_id = get_current_user_id();
+
+		// Check if uploaded data is an image
+		$image = imagecreatefromstring($avatar_data);
+		if (empty($image)) {
+			return new WP_Error('invalid_image', '无效头像文件', array('status' => 400));
+		}
+
+		// 从$avatar_data_base64 base64的head 中使用正则匹配出文件类型
+		$extension = preg_replace('/^data:image\/(\w+);base64,.*/', '$1', $avatar_data_base64);
+		$extension = $extension === 'jpeg' ? 'jpg' : $extension;
+
+		// 只接受jpg和png格式的头像
+		if (!in_array($extension, array('jpg', 'png'))) {
+			return new WP_Error('invalid_image', '非支持的图片格式', array('status' => 400));
+		}
+
+		// Generate unique filename for the avatar
+		$filename = $user_id . '.' . $extension;
+
+		// Upload directory
+		$upload_dir = wp_upload_dir();
+		$upload_path = $upload_dir['basedir'] . '/avatar/';
+
+		// Create avatar directory if not exists
+		if (!file_exists($upload_path)) {
+			mkdir($upload_path, 0755, true);
+		}
+
+		// Upload the avatar image
+		$upload_file = file_put_contents($upload_path . $filename, $avatar_data);
+		if ($upload_file !== false) {
+			$url = $upload_dir['baseurl'] . '/avatar/' . $filename . '?t=' . time();
+		} else {
+			// Error uploading avatar
+			return new WP_Error('upload_error', '上传失败', array('status' => 500));
+		}
+
+		// Update user meta with the new avatar URL
+		if (!update_user_meta($user_id, 'avatar', $url)) {
+			return new WP_Error('update_error', '更新失败', array('status' => 500));
+		}
+
+		return new WP_REST_Response([
+			'code' => 'success',
+			'message' => '上传成功',
+			'data' => [
+				'avatarUrl' => $url
+			],
+		], 200);
+
 	}
 
 	public function jwt_permissions_check($request) {
