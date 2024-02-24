@@ -1,5 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
+
+global $wp;
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
