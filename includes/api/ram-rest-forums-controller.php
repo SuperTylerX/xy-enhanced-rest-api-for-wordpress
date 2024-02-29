@@ -433,7 +433,7 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 				$res["author_name"] = get_post_meta($reply_id, '_bbp_anonymous_name', true);
 				$res["author_avatar"] = get_avatar_url_2(get_post_meta($reply_id, '_bbp_anonymous_email', true));
 			}
-			$res["post_date"] = time_tran($comment->post_date);
+			$res["date"] = time_tran($comment->post_date);
 			$res["content"] = $comment->post_content;
 
 			if (get_option("uni_show_comment_location")) {
@@ -468,7 +468,7 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 				$res["author_name"] = get_post_meta($reply_id, '_bbp_anonymous_name', true);
 				$res["author_avatar"] = get_avatar_url_2(get_post_meta($reply_id, '_bbp_anonymous_email', true));
 			}
-			$res["post_date"] = time_tran($comment->post_date);
+			$res["date"] = time_tran($comment->post_date);
 			$res["content"] = $comment->post_content;
 			$res["child"] = $this->get_child_comment($topic_id, $reply_id);
 			$comments_list[] = $res;
