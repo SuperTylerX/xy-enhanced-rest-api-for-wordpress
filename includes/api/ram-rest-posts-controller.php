@@ -43,44 +43,35 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
-		register_rest_route($this->namespace, '/' . $this->resource_name . '/hotpostthisyear', array(
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/getTopCommentPosts', array(
 			array(
 				'methods' => 'GET',
-				'callback' => array($this, 'getTopHotPostsThisYear'),
+				'callback' => array($this, 'getTopHotCommentPosts'),
 			),
 			// Register our schema callback.
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
-		register_rest_route($this->namespace, '/' . $this->resource_name . '/hotpost', array(
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/getTopLikePosts', array(
 			array(
 				'methods' => 'GET',
-				'callback' => array($this, 'getTopHotPosts'),
+				'callback' => array($this, 'getTopLikePosts'),
 			),
 			// Register our schema callback.
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
-		register_rest_route($this->namespace, '/' . $this->resource_name . '/likethisyear', array(
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/getTopPageViewPosts', array(
 			array(
 				'methods' => 'GET',
-				'callback' => array($this, 'getTopLikePostsThisYear'),
-			),
-			// Register our schema callback.
-			'schema' => array($this, 'get_public_item_schema'),
-		));
-
-		register_rest_route($this->namespace, '/' . $this->resource_name . '/pageviewsthisyear', array(
-			array(
-				'methods' => 'GET',
-				'callback' => array($this, 'getTopPageviewsPostsThisYear'),
+				'callback' => array($this, 'getTopPageViewsPosts'),
 			),
 			// Register our schema callback.
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 	}
 
-	function getTopPageviewsPostsThisYear($request) {
+	function getTopPageViewsPosts($request) {
 		$cachedata = '';
 		if (function_exists('MRAC')) {
 			$cachedata = MRAC()->cacheManager->get_cache();
@@ -90,58 +81,33 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 				return $response;
 			}
 		}
-		$limit = 10;
-		global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
-		date_default_timezone_set('Asia/Shanghai');
-		$today = date("Y-m-d H:i:s"); //获取今天日期时间
-		$fristday = date("Y-m-d H:i:s", strtotime("-1 year"));
-		$sql = "SELECT  " . $wpdb->posts . ".ID as ID, post_title, post_name,post_content,post_date, CONVERT(" . $wpdb->postmeta . ".meta_value,SIGNED) AS 'pageviews_total' FROM " . $wpdb->posts . " LEFT JOIN " . $wpdb->postmeta . " ON " . $wpdb->posts . ".ID = " . $wpdb->postmeta . ".post_id WHERE " . $wpdb->postmeta . ".meta_key ='views' AND post_date BETWEEN '" . $fristday . "' AND '" . $today . "' AND post_status = 'publish' AND post_type='post'  AND post_password = '' ORDER  BY pageviews_total DESC LIMIT " . $limit;
-		$mostlikes = $wpdb->get_results($sql);
-		$posts = array();
-		foreach ($mostlikes as $post) {
+		global $wpdb;
 
-			$post_id = (int)$post->ID;
-			$post_title = stripslashes($post->post_title);
-			$pageviews = (int)$post->pageviews_total;
-			$post_date = $post->post_date;
-			$post_permalink = get_permalink($post->ID);
-			$_data["post_id"] = $post_id;
-			$_data["post_title"] = $post_title;
-			$_data["pageviews"] = $pageviews;
-			$_data["post_date"] = $post_date;
-			$_data["post_permalink"] = $post_permalink;
+		$query = "
+        SELECT $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_date, $wpdb->posts.post_content, SUM($wpdb->postmeta.meta_value) AS views
+        FROM $wpdb->posts
+        INNER JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id)
+        WHERE $wpdb->posts.post_type = 'post'
+        AND $wpdb->posts.post_status = 'publish'
+        AND $wpdb->postmeta.meta_key = 'views' -- 假设阅读量存储在名为 'views' 的自定义字段中
+        -- AND $wpdb->posts.post_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        GROUP BY $wpdb->posts.ID
+        ORDER BY views DESC
+        LIMIT 20
+    ";
 
-			$like_count = get_post_meta($post_id, 'postApprovalCount', true);
-			if (empty($like_count)) {
-				$_data['like_count'] = 0;
-			} else {
-				$_data['like_count'] = $like_count;
-			}
+		$results = $wpdb->get_results($query);
 
-			$comment_total = $wpdb->get_var("SELECT COUNT(1) FROM " . $wpdb->comments . " where  comment_approved = '1' and comment_post_ID=" . $post_id);
-			$_data['comment_total'] = $comment_total;
+		$posts = $this->handlePostListResult($results);
 
-			$images = getPostImages($post->post_content, $post_id);
-
-			$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-			$_data['content_first_image'] = $images['content_first_image'];
-			$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-			$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-			$_data['post_frist_image'] = $images['post_frist_image'];
-			$_data['post_medium_image'] = $images['post_medium_image'];
-			$_data['post_large_image'] = $images['post_large_image'];
-			$_data['post_full_image'] = $images['post_full_image'];
-			$_data['post_all_images'] = $images['post_all_images'];
-			$posts[] = $_data;
-		}
 		if ($cachedata == '' && function_exists('MRAC')) {
 			$cachedata = MRAC()->cacheManager->set_cache($posts, 'pageviewsthisyear', 0);
 		}
-		$response = rest_ensure_response($posts);
-		return $response;
+		return rest_ensure_response($posts);
 	}
 
-	function getTopLikePostsThisYear($request) {
+	function getTopLikePosts($request) {
+		global $wpdb;
 		$cachedata = '';
 		if (function_exists('MRAC')) {
 			$cachedata = MRAC()->cacheManager->get_cache();
@@ -151,48 +117,22 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 				return $response;
 			}
 		}
-		global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
-		$limit = 10;
-		date_default_timezone_set('Asia/Shanghai');
-		$today = date("Y-m-d H:i:s"); //获取今天日期时间
-		$fristday = date("Y-m-d H:i:s", strtotime("-1 year"));
-		$sql = "SELECT  " . $wpdb->posts . ".ID as ID, post_title, post_name, post_content, post_date FROM " . $wpdb->posts . ", " . $wpdb->postmeta . " WHERE ID = post_id AND meta_key ='postApprovalCount' AND post_date BETWEEN '" . $fristday . "' AND '" . $today . "' AND post_status = 'publish' AND post_type='post'  AND post_password = '' ORDER BY meta_value DESC LIMIT " . $limit;
-		$mostlikes = $wpdb->get_results($sql);
-		$posts = array();
-		foreach ($mostlikes as $post) {
+		$query = "
+        SELECT $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_date, $wpdb->posts.post_content, SUM($wpdb->postmeta.meta_value) AS views, SUM($wpdb->postmeta.meta_value) AS approval_count
+        FROM $wpdb->posts
+        INNER JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id)
+        WHERE $wpdb->posts.post_type = 'post'
+        AND $wpdb->posts.post_status = 'publish'
+        AND $wpdb->postmeta.meta_key = 'postApprovalCount' -- 假设点赞数存储在名为 'postApprovalCount' 的自定义字段中
+        -- AND $wpdb->posts.post_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        GROUP BY $wpdb->posts.ID
+        ORDER BY approval_count DESC
+        LIMIT 20
+    ";
+		$results = $wpdb->get_results($query);
 
-			$post_id = (int)$post->ID;
-			$post_title = stripslashes($post->post_title);
-			$post_date = $post->post_date;
-			$post_permalink = get_permalink($post->ID);
-			$_data["post_id"] = $post_id;
-			$_data["post_title"] = $post_title;
-			$_data["post_date"] = $post_date;
-			$_data["post_permalink"] = $post_permalink;
+		$posts = $this->handlePostListResult($results);
 
-			$pageviews = (int)get_post_meta($post_id, 'views', true);
-			$_data['pageviews'] = $pageviews;
-
-			$like_count = get_post_meta($post_id, 'postApprovalCount', true);
-			if (empty($like_count)) {
-				$_data['like_count'] = 0;
-			} else {
-				$_data['like_count'] = $like_count;
-			}
-
-			$images = getPostImages($post->post_content, $post_id);
-
-			$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-			$_data['content_first_image'] = $images['content_first_image'];
-			$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-			$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-			$_data['post_frist_image'] = $images['post_frist_image'];
-			$_data['post_medium_image'] = $images['post_medium_image'];
-			$_data['post_large_image'] = $images['post_large_image'];
-			$_data['post_full_image'] = $images['post_full_image'];
-			$_data['post_all_images'] = $images['post_all_images'];
-			$posts[] = $_data;
-		}
 		if ($cachedata == '' && function_exists('MRAC')) {
 			$cachedata = MRAC()->cacheManager->set_cache($posts, 'likethisyear', 0);
 		}
@@ -201,115 +141,68 @@ class RAM_REST_Posts_Controller extends WP_REST_Controller {
 		return $response;
 	}
 
-	function getTopHotPosts($request) {
-		$limit = 10;
-		global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
-		date_default_timezone_set('Asia/Shanghai');
-		$sql = "SELECT  " . $wpdb->posts . ".ID as ID, post_title, post_name, post_content,post_date, COUNT(" . $wpdb->comments . ".comment_post_ID) AS 'comment_total' FROM " . $wpdb->posts . " LEFT JOIN " . $wpdb->comments . " ON " . $wpdb->posts . ".ID = " . $wpdb->comments . ".comment_post_ID WHERE comment_approved = '1' AND post_date < '" . date("Y-m-d H:i:s", (time() + ($time_difference * 3600))) . "' AND post_status = 'publish' AND post_type='post'  AND post_password = '' GROUP BY " . $wpdb->comments . ".comment_post_ID ORDER  BY comment_total DESC LIMIT " . $limit;
-		$mostcommenteds = $wpdb->get_results($sql);
-		$posts = array();
-		foreach ($mostcommenteds as $post) {
-			$post_id = (int)$post->ID;
-			$post_title = stripslashes($post->post_title);
-			$comment_total = (int)$post->comment_total;
-			$post_date = $post->post_date;
-			$post_permalink = get_permalink($post->ID);
-			$_data["post_id"] = $post_id;
-			$_data["post_title"] = $post_title;
-			$_data["comment_total"] = $comment_total;
-			$_data["post_date"] = $post_date;
-			$_data["post_permalink"] = $post_permalink;
-			$pageviews = (int)get_post_meta($post_id, 'views', true);
-			$_data['pageviews'] = $pageviews;
-
-			$like_count = get_post_meta($post_id, 'postApprovalCount', true);
-			if (empty($like_count)) {
-				$_data['like_count'] = 0;
-			} else {
-				$_data['like_count'] = $like_count;
-			}
-
-			$images = getPostImages($post->post_content, $post_id);
-
-			$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-			$_data['content_first_image'] = $images['content_first_image'];
-			$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-			$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-			$_data['post_frist_image'] = $images['post_frist_image'];
-			$_data['post_medium_image'] = $images['post_medium_image'];
-			$_data['post_large_image'] = $images['post_large_image'];
-			$_data['post_full_image'] = $images['post_full_image'];
-			$_data['post_all_images'] = $images['post_all_images'];
-
-			$posts[] = $_data;
-		}
-		$response = rest_ensure_response($posts);
-		return $response;
-	}
-
-	function getTopHotPostsThisYear($request) {
+	function getTopHotCommentPosts($request) {
 		$cachedata = '';
 		if (function_exists('MRAC')) {
 			$cachedata = MRAC()->cacheManager->get_cache();
 			if (!empty($cachedata)) {
-
-				$response = rest_ensure_response($cachedata);
-				return $response;
+				return rest_ensure_response($cachedata);
 			}
 		}
 
-		global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
-		date_default_timezone_set('Asia/Shanghai');
-		$limit = 10;
-		$today = date("Y-m-d H:i:s"); //获取今天日期时间
-		// $fristday = date( "Y-m-d H:i:s",  strtotime(date("Y",time())."-1"."-1"));  //本年第一天;
-		$fristday = date("Y-m-d H:i:s", strtotime("-1 year"));
-		$sql = "SELECT  " . $wpdb->posts . ".ID as ID, post_title, post_name,post_content,post_date, COUNT(" . $wpdb->comments . ".comment_post_ID) AS 'comment_total' FROM " . $wpdb->posts . " LEFT JOIN " . $wpdb->comments . " ON " . $wpdb->posts . ".ID = " . $wpdb->comments . ".comment_post_ID WHERE comment_approved = '1' AND post_date BETWEEN '" . $fristday . "' AND '" . $today . "' AND post_status = 'publish' AND post_type='post' AND post_password = '' GROUP BY " . $wpdb->comments . ".comment_post_ID ORDER  BY comment_total DESC LIMIT " . $limit;
-		$mostcommenteds = $wpdb->get_results($sql);
-		$posts = array();
-		foreach ($mostcommenteds as $post) {
+		global $wpdb;
+		// 查询一个月内有评论的文章ID及其评论数量
+		$query = "
+		    SELECT p.ID, p.post_title, p.post_date, p.post_content, 
+		           SUM(pm.meta_value) AS views, COUNT(c.comment_post_ID) AS comment_count
+		    FROM {$wpdb->prefix}posts p
+		    LEFT JOIN {$wpdb->prefix}postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'views'
+		    LEFT JOIN {$wpdb->prefix}comments c ON p.ID = c.comment_post_ID
+		    WHERE p.post_type = 'post' AND p.post_status = 'publish'  
+        	-- AND  p.post_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+		    GROUP BY p.ID, p.post_title, p.post_date, p.post_content
+		    ORDER BY comment_count DESC
+		    LIMIT 20; ";
 
+		$results = $wpdb->get_results($query);
+
+		$posts = $this->handlePostListResult($results);
+
+		if ($cachedata == '' && function_exists('MRAC')) {
+			$cachedata = MRAC()->cacheManager->set_cache($posts, 'hotpostthisyear', 0);
+		}
+
+		return rest_ensure_response($posts);
+	}
+
+	function handlePostListResult($results) {
+		global $wpdb;
+		$posts = array();
+		foreach ($results as $post) {
 			$post_id = (int)$post->ID;
 			$post_title = stripslashes($post->post_title);
-			$comment_total = (int)$post->comment_total;
+			$pageviews = (int)$post->views;
 			$post_date = $post->post_date;
 			$post_permalink = get_permalink($post->ID);
-			$_data["post_id"] = $post_id;
-			$_data["post_title"] = $post_title;
-			$_data["comment_total"] = $comment_total;
-			$_data["post_date"] = $post_date;
+			$_data["id"] = $post_id;
+			$_data["title"] = ['rendered' => $post_title];
+			$_data["pageviews"] = $pageviews;
+			$_data["date"] = $post_date;
 			$_data["post_permalink"] = $post_permalink;
-
-			$pageviews = (int)get_post_meta($post_id, 'views', true);
-			$_data['pageviews'] = $pageviews;
-
-			$like_count = get_post_meta($post_id, 'postApprovalCount', true);
-			if (empty($like_count)) {
-				$_data['like_count'] = 0;
-			} else {
-				$_data['like_count'] = $like_count;
-			}
+			$_data['like_count'] = (int)get_post_meta($post_id, 'postApprovalCount', true);
+			$_data['total_comments'] = $wpdb->get_var("SELECT COUNT(1) FROM " . $wpdb->comments . " where  comment_approved = '1' and comment_post_ID=" . $post_id);
 
 			$images = getPostImages($post->post_content, $post_id);
 
 			$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-			$_data['content_first_image'] = $images['content_first_image'];
-			$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-			$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-
-			$_data['post_frist_image'] = $images['post_frist_image'];
+			$_data['post_first_image'] = $images['post_first_image'];
 			$_data['post_medium_image'] = $images['post_medium_image'];
 			$_data['post_large_image'] = $images['post_large_image'];
 			$_data['post_full_image'] = $images['post_full_image'];
 			$_data['post_all_images'] = $images['post_all_images'];
 			$posts[] = $_data;
 		}
-		if ($cachedata == '' && function_exists('MRAC')) {
-			$cachedata = MRAC()->cacheManager->set_cache($posts, 'hotpostthisyear', 0);
-		}
-
-		$response = rest_ensure_response($posts);
-		return $response;
+		return $posts;
 	}
 
 	public function getmyLike($request) {
