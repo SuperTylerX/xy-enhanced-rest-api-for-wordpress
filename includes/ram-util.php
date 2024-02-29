@@ -32,23 +32,13 @@ function get_post_image_url($image_id, $size = 'full') {
 }
 
 function getPostImages($content, $postId) {
-	$content_first_image = get_post_content_first_image($content);
-	$post_frist_image = $content_first_image;
+	$post_first_image = get_post_content_first_image($content);
 
-	if (empty($content_first_image)) {
-		$content_first_image = '';
+	if (empty($post_first_image)) {
+		$post_first_image = '';
 	}
 
-	if (empty($post_frist_image)) {
-		$post_frist_image = '';
-	}
-
-	$post_thumbnail_image_150 = '';
-	$post_medium_image_300 = '';
-	$post_thumbnail_image_624 = '';
-
-	$post_thumbnail_image = '';
-
+	$post_thumbnail_image = "";
 	$post_medium_image = "";
 	$post_large_image = "";
 	$post_full_image = "";
@@ -58,66 +48,49 @@ function getPostImages($content, $postId) {
 	if (has_post_thumbnail($postId)) {
 		//获取缩略的ID
 		$thumbnailId = get_post_thumbnail_id($postId);
-
-		//特色图缩略图
-		$image = wp_get_attachment_image_src($thumbnailId, 'thumbnail');
-		$post_thumbnail_image = $image[0];
-		$post_thumbnail_image_150 = $image[0];
-		//特色中等图
-		$image = wp_get_attachment_image_src($thumbnailId, 'medium');
-		$post_medium_image = $image[0];
-		$post_medium_image_300 = $image[0];
-		//特色大图
-		$image = wp_get_attachment_image_src($thumbnailId, 'large');
-		$post_large_image = $image[0];
-		$post_thumbnail_image_624 = $image[0];
-		//特色原图
-		$image = wp_get_attachment_image_src($thumbnailId, 'full');
-		$post_full_image = $image[0];
-
+		if ($thumbnailId !== 0) {
+			//特色图缩略图
+			$image = wp_get_attachment_image_src($thumbnailId, 'thumbnail');
+			$post_thumbnail_image = $image[0];
+			//特色中等图
+			$image = wp_get_attachment_image_src($thumbnailId, 'medium');
+			$post_medium_image = $image[0];
+			//特色大图
+			$image = wp_get_attachment_image_src($thumbnailId, 'large');
+			$post_large_image = $image[0];
+			//特色原图
+			$image = wp_get_attachment_image_src($thumbnailId, 'full');
+			$post_full_image = $image[0];
+		}
 	}
 
-	if (!empty($content_first_image) && empty($post_thumbnail_image)) {
-		$post_thumbnail_image = $content_first_image;
-		$post_thumbnail_image_150 = $content_first_image;
+	if (!empty($post_first_image) && empty($post_thumbnail_image)) {
+		$post_thumbnail_image = $post_first_image;
 	}
 
-	if (!empty($content_first_image) && empty($post_medium_image)) {
-		$post_medium_image = $content_first_image;
-		$post_medium_image_300 = $content_first_image;
-
+	if (!empty($post_first_image) && empty($post_medium_image)) {
+		$post_medium_image = $post_first_image;
 	}
 
-	if (!empty($content_first_image) && empty($post_large_image)) {
-		$post_large_image = $content_first_image;
-		$post_thumbnail_image_624 = $content_first_image;
+	if (!empty($post_first_image) && empty($post_large_image)) {
+		$post_large_image = $post_first_image;
 	}
 
-	if (!empty($content_first_image) && empty($post_full_image)) {
-		$post_full_image = $content_first_image;
+	if (!empty($post_first_image) && empty($post_full_image)) {
+		$post_full_image = $post_first_image;
 	}
 
 	//$post_all_images = get_attached_media( 'image', $postId);
 	$post_all_images = get_post_content_images($content);
 
-	$_data['post_frist_image'] = $post_frist_image;
+	$_data['post_first_image'] = $post_first_image;
 	$_data['post_thumbnail_image'] = $post_thumbnail_image;
 	$_data['post_medium_image'] = $post_medium_image;
 	$_data['post_large_image'] = $post_large_image;
 	$_data['post_full_image'] = $post_full_image;
 	$_data['post_all_images'] = $post_all_images;
 
-	$_data['post_thumbnail_image_150'] = $post_thumbnail_image_150;
-	$_data['post_medium_image_300'] = $post_medium_image_300;
-	$_data['post_thumbnail_image_624'] = $post_thumbnail_image_624;
-
-
-	$_data['content_first_image'] = $content_first_image;
-
-
 	return $_data;
-
-
 }
 
 function get_post_content_images($post_content) {
@@ -158,7 +131,7 @@ function get_avatar_url_2($id_or_email) {
 	} elseif (is_email($id_or_email)) {
 		// isEmail
 		$user = get_user_by_email($id_or_email);
-		if (empty($user)) {
+		if (!empty($user)) {
 			$avatar = get_user_meta($user->ID, "avatar", true);
 			if (empty($avatar)) {
 				$avatar = get_avatar_url($id_or_email);
@@ -340,24 +313,6 @@ function get_qq_video_url($vid) {
 	return $vurl;
 }
 
-function get_post_content_audio($post_content) {
-	if (!$post_content) {
-		$the_post = get_post();
-		$post_content = $the_post->post_content;
-	}
-	$list = array();
-	$c1 = preg_match_all('/<audio\s.*?>/', do_shortcode($post_content), $m1);  //先取出所有img标签文本
-	for ($i = 0; $i < $c1; $i++) {    //对所有的img标签进行取属性
-		$c2 = preg_match_all('/(\w+)\s*=\s*(?:(?:(["\'])(.*?)(?=\2))|([^\/\s]*))/', $m1[0][$i], $m2);   //匹配出所有的属性
-		for ($j = 0; $j < $c2; $j++) {    //将匹配完的结果进行结构重组
-			$list[$i][$m2[1][$j]] = !empty($m2[4][$j]) ? $m2[4][$j] : $m2[3][$j];
-		}
-	}
-
-
-	return $list;
-
-}
 
 function get_content_gallery($content, $flag) {
 	$list = array();
@@ -396,110 +351,83 @@ function get_content_gallery($content, $flag) {
 }
 
 function custom_minapper_post_fields($_data, $post, $request) {
-
 	global $wpdb;
 	$post_id = $post->ID;
 
-	//去除 _links
-	//   foreach($_data->get_links() as $_linkKey => $_linkVal) {
-	//     $_data->remove_link($_linkKey);
-	//  }
-
-	//$content =get_the_content();
 	$content = $_data['content']['rendered'];
 	$content_protected = $_data['content']['protected'];
 	$raw = empty($_data['content']['raw']) ? '' : $_data['content']['raw'];
 
-
+	// 补全Url
 	$siteurl = get_option('siteurl');
 	$upload_dir = wp_upload_dir();
 	$content = str_replace('http:' . strstr($siteurl, '//'), 'https:' . strstr($siteurl, '//'), $content);
 	$content = str_replace('http:' . strstr($upload_dir['baseurl'], '//'), 'https:' . strstr($upload_dir['baseurl'], '//'), $content);
 
 	$images = getPostImages($content, $post_id);
+	$_data['post_first_image'] = $images['post_first_image'];
 	$_data['post_thumbnail_image'] = $images['post_thumbnail_image'];
-	$_data['content_first_image'] = $images['content_first_image'];
-	$_data['post_medium_image_300'] = $images['post_medium_image_300'];
-	$_data['post_thumbnail_image_624'] = $images['post_thumbnail_image_624'];
-
-	$_data['post_frist_image'] = $images['post_frist_image'];
 	$_data['post_medium_image'] = $images['post_medium_image'];
 	$_data['post_large_image'] = $images['post_large_image'];
 	$_data['post_full_image'] = $images['post_full_image'];
 	$_data['post_all_images'] = $images['post_all_images'];
 
-	//获取广告参数
+	//	//获取广告参数
+	//
+	//	$videoAdId = empty(get_option('wf_video_ad_id')) ? '' : get_option('wf_video_ad_id');
+	//	$_data['videoAdId'] = $videoAdId;
+	//
+	//	$listAdId = empty(get_option('wf_list_ad_id')) ? '' : get_option('wf_list_ad_id');
+	//	$listAd = empty(get_option('wf_list_ad')) ? '0' : "1";
+	//	$listAdEvery = empty(get_option('wf_list_ad_every')) ? 5 : (int)get_option('wf_list_ad_every');
+	//
+	//	$_data['listAd'] = $listAd;
+	//	$_data['listAdId'] = $listAdId;
+	//	$_data['listAdEvery'] = $listAdEvery;
 
-	$videoAdId = empty(get_option('wf_video_ad_id')) ? '' : get_option('wf_video_ad_id');
-	$_data['videoAdId'] = $videoAdId;
-
-	$listAdId = empty(get_option('wf_list_ad_id')) ? '' : get_option('wf_list_ad_id');
-	$listAd = empty(get_option('wf_list_ad')) ? '0' : "1";
-	$listAdEvery = empty(get_option('wf_list_ad_every')) ? 5 : (int)get_option('wf_list_ad_every');
-
-
-	$_data['listAd'] = $listAd;
-	$_data['listAdId'] = $listAdId;
-	$_data['listAdEvery'] = $listAdEvery;
-
-	$comments_count = wp_count_comments($post_id);
-	$_data['total_comments'] = $comments_count->approved;
+	// 分类名称
 	$category = get_the_category($post_id);
 	if (!empty($category)) {
 		$_data['category_name'] = $category[0]->cat_name;
 	}
-
+	// 发布日期
 	$post_date = $post->post_date;
-	//$_data['date'] =time_tran($post_date);
 	$_data['post_date'] = time_tran($post_date);
-
-	$like_count = get_post_meta($post_id, 'postApprovalCount', true);
-	if (empty($like_count)) {
-		$_data['like_count'] = 0;
-	} else {
-		$_data['like_count'] = $like_count;
-	}
-
-
+	// 点赞数
+	$like_count = (int)get_post_meta($post_id, 'postApprovalCount', true);
+	$_data['like_count'] = $like_count;
+	// 阅读数
 	$post_views = (int)get_post_meta($post_id, 'views', true);
 	$params = $request->get_params();
+	// 评论数
+	$comments_count = wp_count_comments($post_id);
+	$_data['total_comments'] = $comments_count->approved;
+
+	// 是读取单篇文章
 	if (isset($params['id'])) {
+		//		//获取广告参数
+		//		$detailAdId = empty(get_option('wf_detail_ad_id')) ? '' : get_option('wf_detail_ad_id');
+		//		$detailAd = empty(get_option('wf_detail_ad')) ? '0' : "1";
+		//
+		//		$rewardedVideoAdId = empty(get_option('wf_excitation_ad_id')) ? '' : get_option('wf_excitation_ad_id');
+		//		$excitationAd = empty(get_post_meta($post_id, '_excitation', true)) ? "0" : get_post_meta($post_id, '_excitation', true);
+		//
+		//		$_data['excitationAd'] = $excitationAd;
+		//		$_data['rewardedVideoAdId'] = $rewardedVideoAdId;
+		//
+		//		$_data['detailAdId'] = $detailAdId;
+		//		$_data['detailAd'] = $detailAd;
 
-		$praiseWord = get_option('wf_praise_word');
-		$praiseWord = empty($praiseWord) ? '鼓励' : $praiseWord;
-		$_data['praiseWord'] = $praiseWord;
-
-		//获取广告参数
-		$detailAdId = empty(get_option('wf_detail_ad_id')) ? '' : get_option('wf_detail_ad_id');
-		$detailAd = empty(get_option('wf_detail_ad')) ? '0' : "1";
-
-		$rewardedVideoAdId = empty(get_option('wf_excitation_ad_id')) ? '' : get_option('wf_excitation_ad_id');
-		$excitationAd = empty(get_post_meta($post_id, '_excitation', true)) ? "0" : get_post_meta($post_id, '_excitation', true);
-
-		$_data['excitationAd'] = $excitationAd;
-		$_data['rewardedVideoAdId'] = $rewardedVideoAdId;
-
-		$_data['detailAdId'] = $detailAdId;
-		$_data['detailAd'] = $detailAd;
-
-		$enterpriseMinapp = get_option('wf_enterprise_minapp');
-		$enterpriseMinapp = empty($enterpriseMinapp) ? '0' : $enterpriseMinapp;
-
-
-		$_data['enterpriseMinapp'] = $enterpriseMinapp;
-		$vcontent = get_post_qq_video($content);//解析腾讯视频
+		// 解析腾讯视频
+		$vcontent = get_post_qq_video($content);
 		if (!empty($vcontent)) {
 			$content = $vcontent;
 		}
 
-		//解析音频
-		$audios = get_post_content_audio($post->post_content);
-		$_data['audios'] = $audios;
-
+		// 处理内容里的相册显示
 		$sql = "select post_content from " . $wpdb->posts . " where id=" . $post_id;
 		$postContent = $wpdb->get_var($sql);
-		if (has_shortcode($postContent, 'gallery'))//处理内容里的相册显示
-		{
+		if (has_shortcode($postContent, 'gallery')) {
 			$content = get_content_gallery($postContent, true);
 		}
 		$_content['rendered'] = $content;
@@ -507,73 +435,41 @@ function custom_minapper_post_fields($_data, $post, $request) {
 		$_content['protected'] = $content_protected;
 		$_data['content'] = $_content;
 
+		// 获取所有点赞用户的头像
 		$postApprovalUsers = get_post_meta($post_id, 'postApprovalUsers', true);
 		if (empty($postApprovalUsers)) {
 			$postApprovalUsers = [];
 		}
 		$avatarurls = array();
 		foreach ($postApprovalUsers as $userid) {
-			$avatar = get_user_meta($userid, 'avatar', true);
-			if (!empty($avatar)) {
-				$_avatarurl['avatarurl'] = $avatar;
-			} else {
-				$avatar = plugins_url() . "/" . REST_API_TO_MINIPROGRAM_PLUGIN_NAME . "/includes/images/gravatar.png";
-				$_avatarurl['avatarurl'] = $avatar;
-			}
+			$_avatarurl['avatarurl'] = get_avatar_url_2($userid);
+//			$_avatarurl['userId'] = $userid;
 			$avatarurls[] = $_avatarurl;
 		}
+		$_data['avatarurls'] = $avatarurls;
 
+		// 阅读数+1
 		$post_views = $post_views + 1;
 		if (!update_post_meta($post_id, 'views', $post_views)) {
 			add_post_meta($post_id, 'views', 1, true);
 		}
-		$_data['avatarurls'] = $avatarurls;
-		date_default_timezone_set('Asia/Shanghai');
-		$fristday = date("Y-m-d H:i:s", strtotime("-1 year"));
-		$today = date("Y-m-d H:i:s"); //获取今天日期时间
-		$tags = $_data["tags"];
-		if (!empty($tags)) {
-			$tags = implode(",", $tags);
-			$sql = "
-              SELECT distinct ID, post_title
-              FROM " . $wpdb->posts . " , " . $wpdb->term_relationships . ", " . $wpdb->term_taxonomy . "
-              WHERE " . $wpdb->term_taxonomy . ".term_taxonomy_id =  " . $wpdb->term_relationships . ".term_taxonomy_id
-              AND ID = object_id
-              AND taxonomy = 'post_tag'
-              AND post_status = 'publish'
-              AND post_type = 'post'
-              AND term_id IN (" . $tags . ")
-              AND ID != '" . $post_id . "'
-              AND post_date BETWEEN '" . $fristday . "' AND '" . $today . "' 
-              ORDER BY  RAND()
-              LIMIT 5";
-			$related_posts = $wpdb->get_results($sql);
 
-			$_data['related_posts'] = $related_posts;
-
-		} else {
-			$_data['related_posts'] = null;
+		// 获取上一篇下一篇文章
+		if (!empty($category)) {
+			$category_id = $category[0]->term_id;
+			$next_post = get_next_post($category_id, '', 'category');
+			$previous_post = get_previous_post($category_id, '', 'category');
+			$_data['next_post_id'] = !empty($next_post->ID) ? $next_post->ID : null;
+			$_data['next_post_title'] = !empty($next_post->post_title) ? $next_post->post_title : null;
+			$_data['previous_post_id'] = !empty($previous_post->ID) ? $previous_post->ID : null;
+			$_data['previous_post_title'] = !empty($previous_post->post_title) ? $previous_post->post_title : null;
 		}
-
-
 	} else {
+		// 获取的是文章列表，移除文章内容
 		unset($_data['content']);
-
 	}
-	$pageviews = $post_views;
-	$_data['pageviews'] = $pageviews;
-	if (!empty($category)) {
+	$_data['pageviews'] = $post_views;
 
-		$category_id = $category[0]->term_id;
-		$next_post = get_next_post($category_id, '', 'category');
-		$previous_post = get_previous_post($category_id, '', 'category');
-		$_data['next_post_id'] = !empty($next_post->ID) ? $next_post->ID : null;
-		$_data['next_post_title'] = !empty($next_post->post_title) ? $next_post->post_title : null;
-		$_data['previous_post_id'] = !empty($previous_post->ID) ? $previous_post->ID : null;
-		$_data['previous_post_title'] = !empty($previous_post->post_title) ? $previous_post->post_title : null;
-
-	}
-	// $data->data = $_data;
 	return $_data;
 }
 
@@ -649,4 +545,22 @@ function jwt_permissions_check() {
 		return new WP_Error('error', '尚未登录或Token无效', array('status' => 400));
 	}
 	return true;
+}
+
+/**
+ * @desc 获取用户的角色
+ * @param $userId int 用户ID
+ * @return string 用户角色
+ */
+
+function uni_get_user_role(int $userId) {
+	global $wp_roles;
+	$roles = $wp_roles->get_names();    //得到一个值列表包括 $role_name => $display_name
+	$user = get_user_by('id', $userId);
+	$roleStr = $user->roles[0]; // 这里只取第一个角色
+	if (empty($roleStr)) {
+		return '无角色';
+	} else {
+		return translate_user_role($roles[$roleStr]);
+	}
 }
