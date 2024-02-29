@@ -19,30 +19,22 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 				'args' => array(
 					'postid' => array(
 						'required' => true,
-						'validate_callback' => function ($param, $request, $key) {
-							return is_numeric($param);
-						}
+						'type' => 'integer',
 					),
 					'page' => array(
 						'required' => false,
-						'validate_callback' => function ($param, $request, $key) {
-							return is_numeric($param);
-						},
-						'default' => 1
+						'type' => 'integer',
+						'default' => 1,
 					),
 					'limit' => array(
 						'required' => false,
-						'validate_callback' => function ($param, $request, $key) {
-							return is_numeric($param);
-						},
-						'default' => 10
+						'type' => 'integer',
+						'default' => 10,
 					),
 					'order' => array(
 						'required' => false,
 						'default' => 'asc',
-						'validate_callback' => function ($param, $request, $key) {
-							return in_array($param, array('asc', 'desc'));
-						}
+						'enums' => array('asc', 'desc'),
 					),
 				)
 
@@ -56,7 +48,28 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'GET',
 				'callback' => array($this, 'get_comment_by_user'),
-				'permission_callback' => array($this, 'jwt_permissions_check')
+				'permission_callback' => array($this, 'jwt_permissions_check'),
+				'args' => array(
+					'userId' => array(
+						'required' => true,
+						'type' => 'integer',
+					),
+					'page' => array(
+						'required' => false,
+						'default' => 1,
+						'type' => 'integer',
+					),
+					'limit' => array(
+						'required' => false,
+						'type' => 'integer',
+						'default' => 10,
+					),
+					'order' => array(
+						'required' => false,
+						'default' => 'desc',
+						'enums' => array('asc', 'desc'),
+					),
+				)
 			),
 			'schema' => array($this, 'get_public_item_schema'),
 		));
@@ -69,8 +82,9 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 				'permission_callback' => array($this, 'jwt_permissions_check'),
 				'args' => array(
 					'commentId' => array(
-						'required' => true
-					)
+						'required' => true,
+						'type' => 'integer',
+					),
 				)
 
 			),
@@ -85,19 +99,20 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 				'permission_callback' => array($this, 'jwt_permissions_check'),
 				'args' => array(
 					'post' => array(
-						'required' => true
+						'required' => true,
+						'type' => 'integer',
 					),
 					'parent' => array(
-						'required' => true
+						'required' => true,
+						'type' => 'integer',
 					),
 					'content' => array(
-						'required' => true
+						'required' => true,
+						'type' => 'string',
 					),
 					'platform' => array(
 						'required' => true,
-						'validate_callback' => function ($param, $request, $key) {
-							return in_array($param, array('APP', 'H5', 'MP-WEIXIN', 'MP-ALIPAY', 'MP-BAIDU', 'MP-TOUTIAO', 'MP-QQ'));
-						}
+						'enums' => array('APP', 'H5', 'MP-WEIXIN', 'MP-ALIPAY', 'MP-BAIDU', 'MP-TOUTIAO', 'MP-QQ'),
 					)
 				)
 
@@ -111,10 +126,25 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 	public function get_comment_by_user($request) {
 		global $wpdb;
 
-		$current_user = wp_get_current_user();
-		$user_id = $current_user->ID;
+		$user_id = $request['userId'];
+		$order = $request['order'];
+		$page = $request['page'];
+		$limit = $request['limit'];
 
-		$sql = "SELECT * from " . $wpdb->posts . ", " . $wpdb->comments . " WHERE comment_approved = 1 AND comment_post_ID = ID AND user_id= " . $user_id . " order by comment_date DESC LIMIT 20";
+		$offset = ($page - 1) * $limit;
+
+		$sql = $wpdb->prepare(
+			"SELECT * FROM {$wpdb->posts}, {$wpdb->comments} 
+        WHERE comment_approved = 1 
+        AND comment_post_ID = ID 
+        AND user_id = %d 
+        ORDER BY comment_date $order 
+        LIMIT %d OFFSET %d",
+			$user_id,
+			$limit,
+			$offset
+		);
+
 		$_posts = $wpdb->get_results($sql);
 		$posts = array();
 		foreach ($_posts as $post) {
@@ -122,16 +152,35 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			$_data["id"] = $post->comment_ID;
 			$_data["post_title"] = $post->post_title;
 			$_data["comment_content"] = $post->comment_content;
+			$_data["date"] = $post->comment_date;
+			$_data['author_name'] = $post->comment_author;
+			$_data["author_avatar"] = get_avatar_url_2($user_id);
 			$posts[] = $_data;
 		}
+
+		$total_comments = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(comment_ID) 
+            FROM {$wpdb->comments} 
+            WHERE comment_approved = 1 
+            AND user_id = %d",
+				$user_id
+			)
+		);
+
+		$total_pages = ceil($total_comments / $limit);
+
 		$result["code"] = "success";
 		$result["message"] = "获取评论成功！";
 		$result["status"] = "200";
 		$result["data"] = $posts;
+		$result["pagination"] = array(
+			'total_comments' => $total_comments,
+			'total_pages' => $total_pages,
+			'current_page' => $page
+		);
 
-
-		$response = rest_ensure_response($result);
-		return $response;
+		return rest_ensure_response($result);
 	}
 
 	// 获取某篇文章的评论
@@ -157,17 +206,17 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 		$comments_list = array();
 		foreach ($comments as $comment) {
 			if ($comment->comment_parent == 0) {
-				$data["id"] = $comment->comment_ID;
+				$data["id"] = (int)$comment->comment_ID;
 				$data["author_name"] = $comment->comment_author;
 				// 判断是否是访客留言
 				if (!empty($comment->user_id)) {
-					$data["author_url"] = get_avatar_url_2($comment->user_id);
+					$data["author_avatar"] = get_avatar_url_2($comment->user_id);
 				} else {
-					$data["author_url"] = get_avatar_url_2($comment->comment_author_email);
+					$data["author_avatar"] = get_avatar_url_2($comment->comment_author_email);
 				}
 				$data["date"] = time_tran($comment->comment_date);
 				$data["content"] = $comment->comment_content;
-				$data["userid"] = $comment->user_id;
+				$data["userid"] = (int)$comment->user_id;
 				if (get_option("uni_show_comment_location")) {
 					$data["location"] = empty($comment->comment_author_IP) ? null : get_ip_location($comment->comment_author_IP);
 				}
@@ -194,17 +243,17 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 
 			$comments = $wpdb->get_results($sql);
 			foreach ($comments as $comment) {
-				$data["id"] = $comment->comment_ID;
+				$data["id"] = (int)$comment->comment_ID;
 				$data["author_name"] = $comment->comment_author;
 				// 判断是否是访客留言
 				if (!empty($comment->user_id)) {
-					$data["author_url"] = get_avatar_url_2($comment->user_id);
+					$data["author_avatar"] = get_avatar_url_2($comment->user_id);
 				} else {
-					$data["author_url"] = get_avatar_url_2($comment->comment_author_email);
+					$data["author_avatar"] = get_avatar_url_2($comment->comment_author_email);
 				}
 				$data["date"] = time_tran($comment->comment_date);
 				$data["content"] = $comment->comment_content;
-				$data["userid"] = $comment->user_id;
+				$data["userid"] = (int)$comment->user_id;
 				$data["child"] = $this->get_child_comment($postid, $comment->comment_ID, $limit - 1, $order);
 				$comments_list[] = $data;
 			}
@@ -223,17 +272,12 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 		if ($comment->user_id == $ID) {
 			if (wp_delete_comment($commentId)) {
 				$result["code"] = "success";
-				$result["message"] = "删除评论成功";
-				$result["status"] = "200";
+				$result["message"] = "删除成功";
 			} else {
-				$result["code"] = "failed";
-				$result["message"] = "删除评论失败";
-				$result["status"] = "500";
+				return new WP_Error('error', '删除失败', array('status' => 500));
 			}
 		} else {
-			$result["code"] = "failed";
-			$result["message"] = "删除评论失败，权限拒绝";
-			$result["status"] = "401";
+			return new WP_Error('error', '无权删除', array('status' => 403));
 		}
 		return rest_ensure_response($result);
 	}
@@ -355,9 +399,11 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 				$cachedata = MRAC()->cacheManager->delete_cache('postcomments', $post);
 			}
 
-			$result["status"] = "200";
-			$result["level"] = $userLevel;
-			$result['comment_approved'] = $comment_approved;
+			$result["data"] = [
+				'level' => $userLevel,
+				'comment_approved' => $comment_approved,
+				'comment_id' => $comment_id,
+			];
 			$result["message"] = $message;
 			return rest_ensure_response($result);
 		}
