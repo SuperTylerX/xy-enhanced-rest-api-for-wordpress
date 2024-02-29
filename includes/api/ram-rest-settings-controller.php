@@ -30,6 +30,13 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 	public function get_general_setting($request) {
 
 		$expand = get_option('minapper_expand_settings_page');
+		if (!empty($expand)) {
+			$result["expand"] = ['swipe_nav' => $expand['swipe_nav'], 'selected_nav' => $expand['selected_nav']];
+		} else {
+			$result["expand"] = ['swipe_nav' => [], 'selected_nav' => []];
+		}
+
+
 		$result["downloadfileDomain"] = get_option('wf_downloadfile_domain');
 		$result["businessDomain"] = get_option('wf_business_domain');
 
@@ -37,13 +44,8 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["zanImageUrl"] = get_option('wf_zan_imageurl');
 		$result["logoImageUrl"] = get_option('wf_logo_imageurl');
 		$result["shareImageUrl"] = get_option('wf_share_imageurl');
-
-		if (!empty($expand)) {
-			$result["expand"] = ['swipe_nav' => $expand['swipe_nav'], 'selected_nav' => $expand['selected_nav']];
-		} else {
-			$result["expand"] = ['swipe_nav' => [], 'selected_nav' => []];
-		}
-
+		$result["uni_h5_qq_client_id"] = get_option('uni_h5_qq_client_id');
+		$result["uni_h5_qq_callback_url"] = get_option('uni_h5_qq_callback_url');
 
 		$result["wf_enable_comment_option"] = empty(get_option('wf_enable_comment_option')) ? "0" : get_option('wf_enable_comment_option');
 		$result["wf_enable_qq_comment_option"] = empty(get_option('wf_enable_qq_comment_option')) ? "0" : get_option('wf_enable_qq_comment_option');
@@ -52,6 +54,8 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["uni_enable_h5_comment_option"] = !empty(get_option('uni_enable_h5_comment_option'));
 		$result["wf_weixin_enterprise_minapp"] = empty(get_option('wf_weixin_enterprise_minapp')) ? "0" : get_option('wf_weixin_enterprise_minapp');
 		$result["wf_qq_enterprise_minapp"] = empty(get_option('wf_qq_enterprise_minapp')) ? "0" : get_option('wf_qq_enterprise_minapp');
+		$result["is_user_registration_enable"] = get_option('users_can_register') === "1";
+
 
 		$result["interstitialAdId"] = empty(get_option('wf_interstitial_ad_id')) ? "" : get_option('wf_interstitial_ad_id');
 		$result["enable_index_interstitial_ad"] = empty(get_option('enable_index_interstitial_ad')) ? "0" : get_option('enable_index_interstitial_ad');
@@ -61,7 +65,6 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["enable_hot_interstitial_ad"] = empty(get_option('enable_hot_interstitial_ad')) ? "0" : get_option('enable_hot_interstitial_ad');
 		$result["enable_comments_interstitial_ad"] = empty(get_option('enable_comments_interstitial_ad')) ? "0" : get_option('enable_comments_interstitial_ad');
 		$result["enable_live_interstitial_ad"] = empty(get_option('enable_live_interstitial_ad')) ? "0" : get_option('enable_comments_interstitial_ad');
-		$result["is_user_registration_enable"] = get_option('users_can_register') === "1";
 
 		return rest_ensure_response($result);
 	}

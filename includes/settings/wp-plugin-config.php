@@ -94,6 +94,10 @@ function register_weixinappsettings() {
 	// 评论和发帖审核
 	register_setting('uniapp-group', 'uni_enable_manual_censorship'); // 是否开启人工审核
 	register_setting('uniapp-group', 'uni_enable_ai_censorship');   // 是否开启AI审核
+
+	// H5端QQ互联
+	register_setting('uniapp-group', 'uni_h5_qq_client_id');
+	register_setting('uniapp-group', 'uni_h5_qq_callback_url');
 }
 
 function weixinapp_settings_page() {
@@ -568,6 +572,18 @@ function weixinapp_settings_page() {
                 <h2>H5设置</h2>
                 <div class="section">
                     <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">H5 QQ互联登录ClientID</th>
+                            <td><input type="text" name="uni_h5_qq_client_id" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_h5_qq_client_id')); ?>"/>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row">H5 QQ互联回调地址</th>
+                            <td><input type="text" name="uni_h5_qq_callback_url" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_h5_qq_callback_url')); ?>"/>
+                            </td>
+                        </tr>
                         <tr valign="top">
                             <th scope="row">开启H5的评论和发帖</th>
                             <td>
