@@ -48,7 +48,6 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			array(
 				'methods' => 'GET',
 				'callback' => array($this, 'get_comment_by_user'),
-				'permission_callback' => array($this, 'jwt_permissions_check'),
 				'args' => array(
 					'userId' => array(
 						'required' => true,

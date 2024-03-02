@@ -41,6 +41,12 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'uni_baidu_secret');
 	register_setting('uniapp-group', 'uni_baidu_key');
 
+	// 支付宝ID和密钥设置
+	register_setting('uniapp-group', 'uni_alipay_appid');
+	register_setting('uniapp-group', 'uni_alipay_private_secret');
+	register_setting('uniapp-group', 'uni_alipay_public_secret');
+
+
 	// 商户号
 	register_setting('uniapp-group', 'wf_mchid');
 	register_setting('uniapp-group', 'wf_paykey');
@@ -52,6 +58,7 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option');
 	register_setting('uniapp-group', 'uni_enable_baidu_comment_option');
 	register_setting('uniapp-group', 'uni_enable_h5_comment_option');
+	register_setting('uniapp-group', 'uni_enable_alipay_comment_option');
 
 	register_setting('uniapp-group', 'uni_show_comment_location');
 
@@ -519,6 +526,44 @@ function weixinapp_settings_page() {
 								$uni_enable_baidu_comment_option = get_option('uni_enable_baidu_comment_option');
 								$checkbox = empty($uni_enable_baidu_comment_option) ? '' : 'checked';
 								echo '<input name="uni_enable_baidu_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+                <h2>支付宝小程序设置</h2>
+                <div class="section">
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row">AppID</th>
+                            <td><input type="text" name="uni_alipay_appid" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_alipay_appid')); ?>"/>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">应用私钥</th>
+                            <td><textarea name="uni_alipay_private_secret" style="width:400px"
+                                ><?php echo esc_attr(get_option('uni_alipay_private_secret')); ?></textarea>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">支付宝公钥</th>
+                            <td><textarea name="uni_alipay_public_secret" style="width:400px"
+                                ><?php echo esc_attr(get_option('uni_alipay_public_secret')); ?></textarea>*
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">开启支付宝小程序的评论</th>
+                            <td>
+								<?php
+								$uni_enable_alipay_comment_option = get_option('uni_enable_alipay_comment_option');
+								$checkbox = empty($uni_enable_alipay_comment_option) ? '' : 'checked';
+								echo '<input name="uni_enable_alipay_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                             </td>
                         </tr>
