@@ -24,66 +24,32 @@ function get_jquery_source() {
 
 
 function register_weixinappsettings() {
-	// 微信ID和密钥设置
+
+	/** 通用设置 **/
+	// 评论和发帖审核
+	register_setting('uniapp-group', 'uni_enable_manual_censorship'); // 是否开启人工审核
+	register_setting('uniapp-group', 'uni_enable_ai_censorship');   // 是否开启AI审核
+	// 显示评论IP位置
+	register_setting('uniapp-group', 'uni_show_comment_location');
+	// 默认图配置
+	register_setting('uniapp-group', 'uni_logo_imageurl');
+	register_setting('uniapp-group', 'uni_share_imageurl');
+
+	/** 微信设置 **/
 	register_setting('uniapp-group', 'wf_appid');
 	register_setting('uniapp-group', 'wf_secret');
+	register_setting('uniapp-group', 'uni_enable_weixin_comment_option'); // 是否开启评论
+	register_setting('uniapp-group', 'uni_weixin_enterprise_minapp');
 
-	// QQ ID和密钥设置
-	register_setting('uniapp-group', 'wf_qq_appid');
-	register_setting('uniapp-group', 'wf_qq_secret');
-
-	// 字节跳动 ID和密钥设置
-	register_setting('uniapp-group', 'uni_bytedance_appid');
-	register_setting('uniapp-group', 'uni_bytedance_secret');
-
-	// 百度ID和密钥设置
-	register_setting('uniapp-group', 'uni_baidu_appid');
-	register_setting('uniapp-group', 'uni_baidu_secret');
-	register_setting('uniapp-group', 'uni_baidu_key');
-
-	// 支付宝ID和密钥设置
-	register_setting('uniapp-group', 'uni_alipay_appid');
-	register_setting('uniapp-group', 'uni_alipay_private_secret');
-	register_setting('uniapp-group', 'uni_alipay_public_secret');
-
-
-	// 商户号
-	register_setting('uniapp-group', 'wf_mchid');
-	register_setting('uniapp-group', 'wf_paykey');
-	register_setting('uniapp-group', 'wf_paybody');
-
-	// 评论是否开启
-	register_setting('uniapp-group', 'wf_enable_comment_option');
-	register_setting('uniapp-group', 'wf_enable_qq_comment_option');
-	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option');
-	register_setting('uniapp-group', 'uni_enable_baidu_comment_option');
-	register_setting('uniapp-group', 'uni_enable_h5_comment_option');
-	register_setting('uniapp-group', 'uni_enable_alipay_comment_option');
-
-	register_setting('uniapp-group', 'uni_show_comment_location');
-
-	register_setting('uniapp-group', 'wf_praise_word');
-	register_setting('uniapp-group', 'wf_weixin_enterprise_minapp');
-	register_setting('uniapp-group', 'wf_qq_enterprise_minapp');
-
+	// 微信广告设置
 	register_setting('uniapp-group', 'wf_list_ad');
 	register_setting('uniapp-group', 'wf_list_ad_id');
 	register_setting('uniapp-group', 'wf_list_ad_every');
-
 	register_setting('uniapp-group', 'wf_excitation_ad_id');
 	register_setting('uniapp-group', 'wf_video_ad_id');
 	register_setting('uniapp-group', 'wf_interstitial_ad_id');
-
 	register_setting('uniapp-group', 'wf_detail_ad');
 	register_setting('uniapp-group', 'wf_detail_ad_id');
-	register_setting('uniapp-group', 'wf_display_categories');
-
-	register_setting('uniapp-group', 'wf_downloadfile_domain');
-	register_setting('uniapp-group', 'wf_business_domain');
-	register_setting('uniapp-group', 'wf_zan_imageurl');
-	register_setting('uniapp-group', 'wf_share_imageurl');
-	register_setting('uniapp-group', 'wf_poster_imageurl');
-
 	register_setting('uniapp-group', 'enable_index_interstitial_ad');
 	register_setting('uniapp-group', 'enable_detail_interstitial_ad');
 	register_setting('uniapp-group', 'enable_topic_interstitial_ad');
@@ -92,19 +58,43 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'enable_comments_interstitial_ad');
 	register_setting('uniapp-group', 'enable_live_interstitial_ad');
 
-	// APP 设置
+
+	/** QQ设置 **/
+	register_setting('uniapp-group', 'wf_qq_appid');
+	register_setting('uniapp-group', 'wf_qq_secret');
+	register_setting('uniapp-group', 'uni_enable_qq_comment_option'); // 是否开启评论
+	register_setting('uniapp-group', 'uni_qq_enterprise_minapp');
+
+
+	/** 字节跳动设置 **/
+	register_setting('uniapp-group', 'uni_bytedance_appid');
+	register_setting('uniapp-group', 'uni_bytedance_secret');
+	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option'); // 是否开启评论
+
+	/** 百度ID和密钥设置 **/
+	register_setting('uniapp-group', 'uni_baidu_appid');
+	register_setting('uniapp-group', 'uni_baidu_secret');
+	register_setting('uniapp-group', 'uni_baidu_key');
+	register_setting('uniapp-group', 'uni_enable_baidu_comment_option'); // 是否开启评论
+
+	/** 支付宝设置 */
+	register_setting('uniapp-group', 'uni_alipay_appid');
+	register_setting('uniapp-group', 'uni_alipay_private_secret');
+	register_setting('uniapp-group', 'uni_alipay_public_secret');
+	register_setting('uniapp-group', 'uni_enable_alipay_comment_option'); // 是否开启评论
+
+	/** H5设置 **/
+	// H5端QQ互联
+	register_setting('uniapp-group', 'uni_h5_qq_client_id');
+	register_setting('uniapp-group', 'uni_h5_qq_callback_url');
+	register_setting('uniapp-group', 'uni_enable_h5_comment_option'); // 是否开启评论
+
+	/** APP 设置 **/
 	register_setting('uniapp-group', 'uni_app_updated_version');
 	register_setting('uniapp-group', 'uni_app_updated_version_code');
 	register_setting('uniapp-group', 'uni_app_updated_content');
 	register_setting('uniapp-group', 'uni_app_updated_download_link');
 
-	// 评论和发帖审核
-	register_setting('uniapp-group', 'uni_enable_manual_censorship'); // 是否开启人工审核
-	register_setting('uniapp-group', 'uni_enable_ai_censorship');   // 是否开启AI审核
-
-	// H5端QQ互联
-	register_setting('uniapp-group', 'uni_h5_qq_client_id');
-	register_setting('uniapp-group', 'uni_h5_qq_callback_url');
 }
 
 function weixinapp_settings_page() {
@@ -166,91 +156,23 @@ function weixinapp_settings_page() {
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row">在小程序里显示的文章分类id</th>
-                            <td><input type="text" name="wf_display_categories" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_display_categories')); ?>"/>
-                                <br/>
-                                <p style="color: #959595 ; display:inline">*
-                                    文章分类id,只支持一级分类,请用英文半角逗号分隔，留空则显示所有分类</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
                             <th scope="row">小程序logo图片地址</th>
-                            <td><input type="text" name="wf_logo_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_logo_imageurl')); ?>"/> <input
-                                        id="wf_logo_imageurl-btn" class="button im-upload" type="button"
+                            <td><input type="text" name="uni_logo_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_logo_imageurl')); ?>"/> <input
+                                        id="uni_logo_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
                             </td>
 
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row">海报图片默认地址</th>
-                            <td><input type="text" name="wf_poster_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_poster_imageurl')); ?>"/> <input
-                                        id="wf_poster_imageurl-btn" class="button im-upload" type="button"
+                            <th scope="row">分享默认图片地址</th>
+                            <td><input type="text" name="uni_share_imageurl" style="width:400px; height:40px"
+                                       value="<?php echo esc_attr(get_option('uni_share_imageurl')); ?>"/> <input
+                                        id="uni_share_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">分享菜单图片地址</th>
-                            <td><input type="text" name="wf_share_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_share_imageurl')); ?>"/> <input
-                                        id="wf_share_imageurl-btn" class="button im-upload" type="button"
-                                        value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
                             </td>
 
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">赞赏码图片地址</th>
-                            <td><input type="text" name="wf_zan_imageurl" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_zan_imageurl')); ?>"/> <input
-                                        id="wf_zan_imageurl-btn" class="button im-upload" type="button"
-                                        value="选择图片"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    请输完整的图片地址，例如：https://www.watch-life.net/images/poster.jpg</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">"赞赏"文字调整为</th>
-                            <td><input type="text" name="wf_praise_word" placeholder="喜欢"
-                                       style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_praise_word')); ?>"/><br/>
-                                <p style="color: #959595; display:inline">*
-                                    例如：<code>鼓励</code>,<code>喜欢</code>，<code>稀罕</code>，不要超过两个汉字</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">downloadFile域名</th>
-                            <td>
-                                    <textarea name="wf_downloadfile_domain" id="wf_downloadfile_domain"
-                                              class="large-text code"
-                                              rows="3"><?php echo esc_attr(get_option('wf_downloadfile_domain')); ?></textarea>
-                                <br/>
-                                <p style="color: #959595; display:inline">请输入域名，用英文逗号分隔</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">业务域名</th>
-                            <td>
-                                    <textarea name="wf_business_domain" id="wf_business_domain" class="large-text code"
-                                              rows="3"><?php echo esc_attr(get_option('wf_business_domain')); ?></textarea>
-                                <br/>
-                                <p style="color: #959595; display:inline">
-                                    请输入域名，用英文逗号分隔。仅支持企业主体小程序。</p>
-                            </td>
                         </tr>
                     </table>
                 </div>
@@ -273,37 +195,12 @@ function weixinapp_settings_page() {
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row">商户号MCHID</th>
-                            <td><input type="text" name="wf_mchid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_mchid')); ?>"/>
-                                <p style="color: #959595; display:inline">微信支付商户后台获取</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">商户支付密钥key</th>
-                            <td><input type="text" name="wf_paykey" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_paykey')); ?>"/>
-                                <p style="color: #959595; display:inline">微信支付商户后台获取</p>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">支付描述</th>
-                            <td><input type="text" name="wf_paybody" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_paybody')); ?>"/><br/>
-                                <p style="color: #959595; display:inline">* 商家名称-销售商品类目，例如：守望轩-赞赏</p>
-                            </td>
-                        </tr>
-
-
-                        <tr valign="top">
                             <th scope="row">开启微信小程序的评论</th>
                             <td>
 								<?php
-								$wf_enable_comment_option = get_option('wf_enable_comment_option');
-								$checkbox = empty($wf_enable_comment_option) ? '' : 'checked';
-								echo '<input name="wf_enable_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								$uni_enable_weixin_comment_option = get_option('uni_enable_weixin_comment_option');
+								$checkbox = empty($uni_enable_weixin_comment_option) ? '' : 'checked';
+								echo '<input name="uni_enable_weixin_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                             </td>
                         </tr>
@@ -312,9 +209,9 @@ function weixinapp_settings_page() {
                             <th scope="row">小程序是否是企业主体</th>
                             <td>
 								<?php
-								$wf_weixin_enterprise_minapp = get_option('wf_weixin_enterprise_minapp');
-								$checkbox = empty($wf_weixin_enterprise_minapp) ? '' : 'checked';
-								echo '<input name="wf_weixin_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								$uni_weixin_enterprise_minapp = get_option('uni_weixin_enterprise_minapp');
+								$checkbox = empty($uni_weixin_enterprise_minapp) ? '' : 'checked';
+								echo '<input name="uni_weixin_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
                             </td>
                         </tr>
@@ -444,9 +341,9 @@ function weixinapp_settings_page() {
                             <th scope="row">开启QQ小程序的评论</th>
                             <td>
 								<?php
-								$wf_enable_qq_comment_option = get_option('wf_enable_qq_comment_option');
-								$checkbox = empty($wf_enable_qq_comment_option) ? '' : 'checked';
-								echo '<input name="wf_enable_qq_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								$uni_enable_qq_comment_option = get_option('uni_enable_qq_comment_option');
+								$checkbox = empty($uni_enable_qq_comment_option) ? '' : 'checked';
+								echo '<input name="uni_enable_qq_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                             </td>
                         </tr>
@@ -455,9 +352,9 @@ function weixinapp_settings_page() {
                             <th scope="row">小程序是否是企业主体</th>
                             <td>
 								<?php
-								$wf_qq_enterprise_minapp = get_option('wf_qq_enterprise_minapp');
-								$checkbox = empty($wf_qq_enterprise_minapp) ? '' : 'checked';
-								echo '<input name="wf_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								$uni_qq_enterprise_minapp = get_option('uni_qq_enterprise_minapp');
+								$checkbox = empty($uni_qq_enterprise_minapp) ? '' : 'checked';
+								echo '<input name="uni_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
 								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
                             </td>
                         </tr>
@@ -639,12 +536,6 @@ function weixinapp_settings_page() {
 								?>
                             </td>
                         </tr>
-                    </table>
-                </div>
-
-                <h2>论坛设置</h2>
-                <div class="section">
-                    <table class="form-table">
                     </table>
                 </div>
             </div>

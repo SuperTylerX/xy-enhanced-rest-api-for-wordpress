@@ -37,34 +37,24 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		}
 
 
-		$result["downloadfileDomain"] = get_option('wf_downloadfile_domain');
-		$result["businessDomain"] = get_option('wf_business_domain');
+		$result["blogName"] = get_option('blogname'); // 获取网站标题
+		$result["blogDescription"] = get_option('blogdescription'); // 获取网站副标题
 
-		$result['posterImageUrl'] = get_option("wf_poster_imageurl") === false ? "" : get_option("wf_poster_imageurl");
-		$result["zanImageUrl"] = get_option('wf_zan_imageurl');
-		$result["logoImageUrl"] = get_option('wf_logo_imageurl');
-		$result["shareImageUrl"] = get_option('wf_share_imageurl');
+		$result["logoImageUrl"] = get_option('uni_logo_imageurl');
+		$result["shareImageUrl"] = get_option('uni_share_imageurl');
+
 		$result["uni_h5_qq_client_id"] = get_option('uni_h5_qq_client_id');
 		$result["uni_h5_qq_callback_url"] = get_option('uni_h5_qq_callback_url');
 
-		$result["wf_enable_comment_option"] = empty(get_option('wf_enable_comment_option')) ? "0" : get_option('wf_enable_comment_option');
-		$result["wf_enable_qq_comment_option"] = empty(get_option('wf_enable_qq_comment_option')) ? "0" : get_option('wf_enable_qq_comment_option');
+		$result["uni_enable_weixin_comment_option"] = !empty(get_option('uni_enable_weixin_comment_option'));
+		$result["uni_enable_qq_comment_option"] = !empty(get_option('uni_enable_qq_comment_option'));
 		$result["uni_enable_bytedance_comment_option"] = !empty(get_option('uni_enable_bytedance_comment_option'));
 		$result["uni_enable_baidu_comment_option"] = !empty(get_option('uni_enable_baidu_comment_option'));
+		$result["uni_enable_alipay_comment_option"] = !empty(get_option('uni_enable_alipay_comment_option'));
 		$result["uni_enable_h5_comment_option"] = !empty(get_option('uni_enable_h5_comment_option'));
-		$result["wf_weixin_enterprise_minapp"] = empty(get_option('wf_weixin_enterprise_minapp')) ? "0" : get_option('wf_weixin_enterprise_minapp');
-		$result["wf_qq_enterprise_minapp"] = empty(get_option('wf_qq_enterprise_minapp')) ? "0" : get_option('wf_qq_enterprise_minapp');
+		$result["uni_weixin_enterprise_minapp"] = !empty(get_option('uni_weixin_enterprise_minapp'));
+		$result["uni_qq_enterprise_minapp"] = !empty(get_option('uni_qq_enterprise_minapp'));
 		$result["is_user_registration_enable"] = get_option('users_can_register') === "1";
-
-
-		$result["interstitialAdId"] = empty(get_option('wf_interstitial_ad_id')) ? "" : get_option('wf_interstitial_ad_id');
-		$result["enable_index_interstitial_ad"] = empty(get_option('enable_index_interstitial_ad')) ? "0" : get_option('enable_index_interstitial_ad');
-		$result["enable_detail_interstitial_ad"] = empty(get_option('enable_detail_interstitial_ad')) ? "0" : get_option('enable_detail_interstitial_ad');
-		$result["enable_topic_interstitial_ad"] = empty(get_option('enable_topic_interstitial_ad')) ? "0" : get_option('enable_topic_interstitial_ad');
-		$result["enable_list_interstitial_ad"] = empty(get_option('enable_list_interstitial_ad')) ? "0" : get_option('enable_list_interstitial_ad');
-		$result["enable_hot_interstitial_ad"] = empty(get_option('enable_hot_interstitial_ad')) ? "0" : get_option('enable_hot_interstitial_ad');
-		$result["enable_comments_interstitial_ad"] = empty(get_option('enable_comments_interstitial_ad')) ? "0" : get_option('enable_comments_interstitial_ad');
-		$result["enable_live_interstitial_ad"] = empty(get_option('enable_live_interstitial_ad')) ? "0" : get_option('enable_comments_interstitial_ad');
 
 		return rest_ensure_response($result);
 	}

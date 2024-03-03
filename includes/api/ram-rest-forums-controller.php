@@ -395,6 +395,7 @@ class RAM_REST_Forums_Controller extends WP_REST_Controller {
 		}
 		$all_topic_data['content'] = bbp_get_topic_content($topic_id);
 		$all_topic_data['like_count'] = count(bbp_get_topic_favoriters($topic_id));
+		$all_topic_data['all_img'] = get_post_content_images(bbp_get_topic_content($topic_id));
 
 		$current_user = wp_get_current_user();
 		$user_id = $current_user->ID;
