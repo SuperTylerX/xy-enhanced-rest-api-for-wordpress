@@ -50,13 +50,14 @@ if (!class_exists('RestAPIMiniProgram')) {
 			//定制化内容输出，对pc端和api都生效
 			add_filter('the_content', 'custom_content_filter');
 			//对文章的自定义输出
-			add_filter('rest_prepare_post', 'custom_post_fields', 10, 3);
+//			add_filter('rest_prepare_post', 'custom_post_fields', 10, 3);
 			//对页面的自定义输出
-			add_filter('rest_prepare_page', 'custom_post_fields', 10, 3);
+//			add_filter('rest_prepare_page', 'custom_post_fields', 10, 3);
 			//对评论的自定义输出
 			add_filter('rest_prepare_comment', 'custom_comment_fields', 10, 3);
 			//获取分类的封面图片
 			add_filter('rest_prepare_category', 'custom_fields_rest_prepare_category', 10, 3);
+			add_filter('rest_prepare_post_tag', 'custom_fields_rest_prepare_category', 10, 3);
 
 			//添加管理用户头像列
 			add_filter('manage_users_columns', 'users_columns');
