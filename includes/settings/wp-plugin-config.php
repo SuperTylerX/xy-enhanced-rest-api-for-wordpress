@@ -92,8 +92,10 @@ function register_weixinappsettings() {
 	/** APP 设置 **/
 	register_setting('uniapp-group', 'uni_app_updated_version');
 	register_setting('uniapp-group', 'uni_app_updated_version_code');
-	register_setting('uniapp-group', 'uni_app_updated_content');
+	register_setting('uniapp-group', 'uni_app_updated_log');
 	register_setting('uniapp-group', 'uni_app_updated_download_link');
+	register_setting('uniapp-group', 'uni_app_updated_ios_download_link');
+	register_setting('uniapp-group', 'uni_app_force_update');
 
 }
 
@@ -471,7 +473,6 @@ function weixinapp_settings_page() {
                 <h2>APP设置</h2>
                 <div class="section">
                     <table class="form-table">
-
                         <tr valign="top">
                             <th scope="row"><label for="uni_app_updated_version">APP版本名称</label></th>
                             <td><input type="text" name="uni_app_updated_version" style="width:400px; height:40px"
@@ -493,19 +494,45 @@ function weixinapp_settings_page() {
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="uni_app_updated_content">APP下载链接</label></th>
-                            <td><input type="text" name="uni_app_updated_content" style="width:400px; height:40px"
-                                       id="uni_app_updated_content"
-                                       value="<?php echo esc_attr(get_option('uni_app_updated_content')); ?>"/>
+                            <th scope="row"><label for="uni_app_updated_download_link">安卓APP更新链接</label></th>
+                            <td>
+                                <input style="width:400px; height:40px"
+                                       name="uni_app_updated_download_link"
+                                       id="uni_app_updated_download_link"
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_download_link')); ?>"/>
                             </td>
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><label for="uni_app_updated_download_link">APP更新内容</label></th>
+                            <th scope="row"><label for="uni_app_updated_ios_download_link">iOS APP应用商店地址</label>
+                            </th>
                             <td>
-                                <textarea name="uni_app_updated_download_link" cols="60"
+                                <input style="width:400px; height:40px"
+                                       name="uni_app_updated_ios_download_link"
+                                       id="uni_app_updated_ios_download_link"
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_ios_download_link')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_force_update">是否强制更新</label></th>
+                            <td>
+								<?php
+								$uni_app_force_update = get_option('uni_app_force_update');
+								$checkbox = empty($uni_app_force_update) ? '' : 'checked';
+								echo '<input name="uni_app_force_update"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								?>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row"><label for="uni_app_updated_log">APP更新日志</label></th>
+                            <td><textarea type="text" name="uni_app_updated_log"
+                                          style="width:400px"
+                                          id="uni_app_updated_log"
+                                          cols="60"
                                           rows="10"
-                                          id="uni_app_updated_download_link"><?php echo esc_attr(get_option('uni_app_updated_download_link')); ?></textarea>
+                                ><?php echo esc_attr(get_option('uni_app_updated_log')); ?></textarea>
                             </td>
                         </tr>
                     </table>

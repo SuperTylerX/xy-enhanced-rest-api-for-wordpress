@@ -25,6 +25,16 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 			'schema' => array($this, 'get_public_item_schema'),
 		));
 
+		register_rest_route($this->namespace, '/' . $this->resource_name . '/getAppUpdatedVersion', array(
+			// Here we register the readable endpoint for collections.
+			array(
+				'methods' => 'GET',
+				'callback' => array($this, 'getAppUpdatedVersion'),
+			),
+			// Register our schema callback.
+			'schema' => array($this, 'get_public_item_schema'),
+		));
+
 	}
 
 	public function get_general_setting($request) {
@@ -59,4 +69,15 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		return rest_ensure_response($result);
 	}
 
+
+	public function getAppUpdatedVersion($request) {
+		return array(
+			"updatedVersion" => get_option('uni_app_updated_version'),
+			"updatedVersionCode" => (int)get_option('uni_app_updated_version_code'),
+			"downloadLink" => get_option('uni_app_updated_download_link'),
+			"iosDownloadLink" => get_option('uni_app_updated_ios_download_link'),
+			"isForceUpdate" => !empty(get_option('uni_app_force_update')),
+			"updateLog" => get_option('uni_app_updated_log'),
+		);
+	}
 }
