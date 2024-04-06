@@ -46,9 +46,11 @@ function output_users_columns($var, $columnName, $userId) {
 function addCustomUserField(WP_REST_Response $response, WP_User $user, WP_REST_Request $request) {
 	// 增加自定义头像返回
 	$response->data["avatar"] = get_avatar_url_2($user->ID);
+
 	// 增加社交绑定信息返回
 	$social_connect = get_user_meta($user->ID, "social_connect", true);
 	$response->data["social_connect"] = unserialize(empty($social_connect) ? "" : $social_connect);
+
 	// 增加用户角色名称
 	global $wp_roles;
 	$roles = $wp_roles->get_names();    //得到一个值列表包括 $role_name => $display_name
@@ -59,7 +61,5 @@ function addCustomUserField(WP_REST_Response $response, WP_User $user, WP_REST_R
 		$response->data["role"] = translate_user_role($roles[$roleStr]);
 	}
 
-	// 移除不用的属性
-	unset($response->data["capabilities"]);
 	return $response;
 }
