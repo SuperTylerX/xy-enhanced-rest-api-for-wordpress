@@ -154,6 +154,7 @@ class RAM_REST_Comments_Controller extends WP_REST_Controller {
 			$_data["date"] = $post->comment_date;
 			$_data['author_name'] = $post->comment_author;
 			$_data["author_avatar"] = get_avatar_url_2($user_id);
+			$_data["author_id"] = $user_id;
 			$posts[] = $_data;
 		}
 

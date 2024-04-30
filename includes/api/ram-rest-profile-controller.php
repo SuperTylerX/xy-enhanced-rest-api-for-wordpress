@@ -33,6 +33,10 @@ class RAM_REST_Profile_Controller extends WP_REST_Controller {
 		$userId = $request->get_param('userId');
 		$user = get_user_by('id', $userId);
 
+		if (!$user) {
+			return new WP_Error('rest_user_invalid_id', __('无效的用户ID'), array('status' => 404));
+		}
+
 		// 获取该用户的昵称
 		$nickname = $user->nickname;
 		// 获取该用户的头像

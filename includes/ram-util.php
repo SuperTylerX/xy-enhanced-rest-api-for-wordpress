@@ -418,6 +418,11 @@ function custom_minapper_post_fields($_data, $post, $request) {
 		//		$_data['detailAdId'] = $detailAdId;
 		//		$_data['detailAd'] = $detailAd;
 
+		// 获取作者头像
+		$author_id = $post->post_author;
+		$_data['author_avatar'] = get_avatar_url_2($author_id);
+		$_data['author_name'] = get_the_author_meta('display_name', $author_id);
+
 		// 解析腾讯视频
 		$vcontent = get_post_qq_video($content);
 		if (!empty($vcontent)) {
