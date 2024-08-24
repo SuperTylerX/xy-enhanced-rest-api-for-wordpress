@@ -19,6 +19,10 @@ define('REST_API_TO_MINIPROGRAM_PLUGIN_URL', plugins_url(REST_API_TO_MINIPROGRAM
 require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/vendor/ipip/Reader.php');
 require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/vendor/ipip/City.php');
 
+//引入个推SDK
+require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/vendor/getui-pushapi-php-client-v2/GTClient.php');
+require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-unipush.php');
+
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-util.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-api.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/uni-wechat-api.php');
@@ -45,6 +49,7 @@ if (!class_exists('RestAPIMiniProgram')) {
 		public $WechatAPI;
 		public $QQAPI;
 		public $ByteDanceAPI;
+		public $GTClient;
 
 		public function __construct() {
 			//定制化内容输出，对pc端和api都生效
@@ -101,6 +106,16 @@ if (!class_exists('RestAPIMiniProgram')) {
 			$this->QQAPI = new UniQQAPI();
 			$this->ByteDanceAPI = new UniByteDanceAPI();
 			$this->BaiduAPI = new UniBaiduAPI();
+
+			// 加载个推
+			$isUniPushEnable = get_option('uni_enable_uni_push');
+			if ($isUniPushEnable) {
+				$appId = get_option('uni_push_app_id');
+				$appKey = get_option('uni_push_app_key');
+				$masterSecret = get_option('uni_push_master_secret');
+
+				$this->GTClient = new GTClient('https://restapi.getui.com', $appKey, $appId, $masterSecret);
+			}
 		}
 	}
 

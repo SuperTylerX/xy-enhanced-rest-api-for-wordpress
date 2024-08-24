@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 function weixinapp_create_menu() {
 	// 创建新的顶级菜单
-	add_menu_page('Uni App设置', 'Uni App设置', 'administrator', 'weixinapp_slug', 'weixinapp_settings_page', 'dashicons-smartphone', 99);
+	add_menu_page('星荧小程序设置', '星荧小程序设置', 'administrator', 'weixinapp_slug', 'weixinapp_settings_page', 'dashicons-smartphone', 99);
 	add_submenu_page('weixinapp_slug', "基础设置", "基础设置", "administrator", 'weixinapp_slug', 'weixinapp_settings_page');
 	// 调用注册设置函数
 	add_action('admin_init', 'register_weixinappsettings');
@@ -58,6 +58,12 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'enable_comments_interstitial_ad');
 	register_setting('uniapp-group', 'enable_live_interstitial_ad');
 
+	// Uni Push 设置
+	register_setting('uniapp-group', 'uni_enable_uni_push');
+	register_setting('uniapp-group', 'uni_push_app_id');
+	register_setting('uniapp-group', 'uni_push_app_key');
+	register_setting('uniapp-group', 'uni_push_master_secret');
+
 
 	/** QQ设置 **/
 	register_setting('uniapp-group', 'wf_qq_appid');
@@ -102,7 +108,7 @@ function register_weixinappsettings() {
 function weixinapp_settings_page() {
 	?>
     <div class="wrap">
-        <h2>Uni APP设置</h2>
+        <h2>星荧小程序设置</h2>
 		<?php
 
 		if (!empty($_REQUEST['settings-updated'])) {
@@ -122,8 +128,8 @@ function weixinapp_settings_page() {
             <div class="responsive-tabs">
                 <h2>通用设置</h2>
                 <div class="section">
+                    <h3>评论与发帖设置</h3>
                     <table class="form-table">
-
                         <tr valign="top">
                             <th scope="row">是否开启人工评论和发帖审核</th>
                             <td>
@@ -157,9 +163,13 @@ function weixinapp_settings_page() {
                             </td>
                         </tr>
 
+                    </table>
+
+                    <h3>默认图设置</h3>
+                    <table class="form-table">
                         <tr valign="top">
                             <th scope="row">小程序logo图片地址</th>
-                            <td><input type="text" name="uni_logo_imageurl" style="width:400px; height:40px"
+                            <td><input type="text" name="uni_logo_imageurl" style="width: 100%; max-width: 300px;"
                                        value="<?php echo esc_attr(get_option('uni_logo_imageurl')); ?>"/> <input
                                         id="uni_logo_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
@@ -169,12 +179,45 @@ function weixinapp_settings_page() {
 
                         <tr valign="top">
                             <th scope="row">分享默认图片地址</th>
-                            <td><input type="text" name="uni_share_imageurl" style="width:400px; height:40px"
+                            <td><input type="text" name="uni_share_imageurl" style="width: 100%; max-width: 300px;"
                                        value="<?php echo esc_attr(get_option('uni_share_imageurl')); ?>"/> <input
                                         id="uni_share_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
                             </td>
+                        </tr>
+                    </table>
 
+                    <h3>推送设置</h3>
+                    <table class="form-table">
+
+                        <tr valign="top">
+                            <th scope="row">是否启用Uni Push 1.0</th>
+                            <td>
+                                <input name="uni_enable_uni_push"
+                                       type="checkbox" <?php echo get_option('uni_enable_uni_push') ? 'checked' : ''; ?> />
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">Uni Push AppID</th>
+                            <td><input type="text" name="uni_push_app_id" style="width: 100%; max-width: 300px;"
+                                       value="<?php echo esc_attr(get_option('uni_push_app_id')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr valign="top">
+                            <th scope="row">Uni Push AppKey</th>
+                            <td><input type="text" name="uni_push_app_key" style="width: 100%; max-width: 300px;"
+                                       value="<?php echo esc_attr(get_option('uni_push_app_key')); ?>"/>
+                            </td>
+                        </tr>
+
+
+                        <tr valign="top">
+                            <th scope="row">Uni Push MasterSecret</th>
+                            <td><input type="text" name="uni_push_master_secret" style="width: 100%; max-width: 300px;"
+                                       value="<?php echo esc_attr(get_option('uni_push_master_secret')); ?>"/>
+                            </td>
                         </tr>
                     </table>
                 </div>

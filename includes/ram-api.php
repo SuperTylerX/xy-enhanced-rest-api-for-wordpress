@@ -47,6 +47,8 @@ class RAM_API extends WP_REST_Controller {
 		include_once('api/ram-rest-register-controller.php');
 		include_once('api/ram-rest-login-controller.php');
 		include_once('api/ram-rest-profile-controller.php');
+		include_once('api/ram-rest-unipush-controller.php');
+
 	}
 
 	/**
@@ -71,6 +73,7 @@ class RAM_API extends WP_REST_Controller {
 			'RAM_REST_Register_Controller',
 			'RAM_REST_Login_Controller',
 			'RAM_REST_Profile_Controller',
+			'RAM_REST_Unipush_Controller',
 		);
 
 		foreach ($controllers as $controller) {
