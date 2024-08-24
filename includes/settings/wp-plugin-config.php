@@ -6,10 +6,10 @@ if (!defined('ABSPATH')) {
 
 function weixinapp_create_menu() {
 	// 创建新的顶级菜单
-	add_menu_page('星荧小程序设置', '星荧小程序设置', 'administrator', 'weixinapp_slug', 'weixinapp_settings_page', 'dashicons-smartphone', 99);
-	add_submenu_page('weixinapp_slug', "基础设置", "基础设置", "administrator", 'weixinapp_slug', 'weixinapp_settings_page');
+	add_menu_page('星荧小程序设置', '星荧小程序设置', 'administrator', 'uni_app_slug', 'uni_app_settings_page', 'dashicons-smartphone', 99);
+	add_submenu_page('uni_app_slug', "基础设置", "基础设置", "administrator", 'uni_app_slug', 'uni_app_settings_page');
 	// 调用注册设置函数
-	add_action('admin_init', 'register_weixinappsettings');
+	add_action('admin_init', 'register_uni_app_settings');
 }
 
 function get_jquery_source() {
@@ -23,7 +23,7 @@ function get_jquery_source() {
 }
 
 
-function register_weixinappsettings() {
+function register_uni_app_settings() {
 
 	/** 通用设置 **/
 	// 评论和发帖审核
@@ -34,56 +34,41 @@ function register_weixinappsettings() {
 	// 默认图配置
 	register_setting('uniapp-group', 'uni_logo_imageurl');
 	register_setting('uniapp-group', 'uni_share_imageurl');
-
-	/** 微信设置 **/
-	register_setting('uniapp-group', 'wf_appid');
-	register_setting('uniapp-group', 'wf_secret');
-	register_setting('uniapp-group', 'uni_enable_weixin_comment_option'); // 是否开启评论
-	register_setting('uniapp-group', 'uni_weixin_enterprise_minapp');
-
-	// 微信广告设置
-	register_setting('uniapp-group', 'wf_list_ad');
-	register_setting('uniapp-group', 'wf_list_ad_id');
-	register_setting('uniapp-group', 'wf_list_ad_every');
-	register_setting('uniapp-group', 'wf_excitation_ad_id');
-	register_setting('uniapp-group', 'wf_video_ad_id');
-	register_setting('uniapp-group', 'wf_interstitial_ad_id');
-	register_setting('uniapp-group', 'wf_detail_ad');
-	register_setting('uniapp-group', 'wf_detail_ad_id');
-	register_setting('uniapp-group', 'enable_index_interstitial_ad');
-	register_setting('uniapp-group', 'enable_detail_interstitial_ad');
-	register_setting('uniapp-group', 'enable_topic_interstitial_ad');
-	register_setting('uniapp-group', 'enable_list_interstitial_ad');
-	register_setting('uniapp-group', 'enable_hot_interstitial_ad');
-	register_setting('uniapp-group', 'enable_comments_interstitial_ad');
-	register_setting('uniapp-group', 'enable_live_interstitial_ad');
-
 	// Uni Push 设置
 	register_setting('uniapp-group', 'uni_enable_uni_push');
 	register_setting('uniapp-group', 'uni_push_app_id');
 	register_setting('uniapp-group', 'uni_push_app_key');
 	register_setting('uniapp-group', 'uni_push_master_secret');
 
+	/** 微信小程序设置 **/
+	register_setting('uniapp-group', 'wf_appid');
+	register_setting('uniapp-group', 'wf_secret');
+	register_setting('uniapp-group', 'uni_enable_weixin_comment_option'); // 是否开启评论
+	register_setting('uniapp-group', 'uni_weixin_enterprise_minapp');
 
-	/** QQ设置 **/
+	// 一次性订阅消息
+	register_setting('uniapp-group', 'uni_enable_weixin_push');
+	register_setting('uniapp-group', 'uni_weixin_comment_template_id');
+	register_setting('uniapp-group', 'uni_weixin_comment_reply_template_id');
+
+	/** QQ小程序设置 **/
 	register_setting('uniapp-group', 'wf_qq_appid');
 	register_setting('uniapp-group', 'wf_qq_secret');
 	register_setting('uniapp-group', 'uni_enable_qq_comment_option'); // 是否开启评论
 	register_setting('uniapp-group', 'uni_qq_enterprise_minapp');
 
-
-	/** 字节跳动设置 **/
+	/** 字节跳动小程序设置 **/
 	register_setting('uniapp-group', 'uni_bytedance_appid');
 	register_setting('uniapp-group', 'uni_bytedance_secret');
 	register_setting('uniapp-group', 'uni_enable_bytedance_comment_option'); // 是否开启评论
 
-	/** 百度ID和密钥设置 **/
+	/** 百度小程序设置 **/
 	register_setting('uniapp-group', 'uni_baidu_appid');
 	register_setting('uniapp-group', 'uni_baidu_secret');
 	register_setting('uniapp-group', 'uni_baidu_key');
 	register_setting('uniapp-group', 'uni_enable_baidu_comment_option'); // 是否开启评论
 
-	/** 支付宝设置 */
+	/** 支付宝小程序设置 */
 	register_setting('uniapp-group', 'uni_alipay_appid');
 	register_setting('uniapp-group', 'uni_alipay_private_secret');
 	register_setting('uniapp-group', 'uni_alipay_public_secret');
@@ -102,10 +87,11 @@ function register_weixinappsettings() {
 	register_setting('uniapp-group', 'uni_app_updated_download_link');
 	register_setting('uniapp-group', 'uni_app_updated_ios_download_link');
 	register_setting('uniapp-group', 'uni_app_force_update');
+	register_setting('uniapp-group', 'uni_app_android_package_name');
 
 }
 
-function weixinapp_settings_page() {
+function uni_app_settings_page() {
 	?>
     <div class="wrap">
         <h2>星荧小程序设置</h2>
@@ -128,48 +114,52 @@ function weixinapp_settings_page() {
             <div class="responsive-tabs">
                 <h2>通用设置</h2>
                 <div class="section">
-                    <h3>评论与发帖设置</h3>
+                    <h3 class="title">评论与发帖设置</h3>
                     <table class="form-table">
-                        <tr valign="top">
-                            <th scope="row">是否开启人工评论和发帖审核</th>
+                        <tr>
+                            <th scope="row">
+                                <label for="uni_enable_manual_censorship">是否开启评论和发帖人工审核</label>
+                            </th>
                             <td>
 								<?php
 								$uni_enable_manual_censorship = get_option('uni_enable_manual_censorship');
 								$is_uni_enable_manual_censorship = empty($uni_enable_manual_censorship) ? '' : 'checked';
-								echo '<input name="uni_enable_manual_censorship"  type="checkbox" ' . $is_uni_enable_manual_censorship . ' />';
+								echo '<input name="uni_enable_manual_censorship" id="uni_enable_manual_censorship" type="checkbox" ' . $is_uni_enable_manual_censorship . ' />';
 								?>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">是否开启AI评论和发帖审核</th>
+                        <tr>
+                            <th scope="row">
+                                <label for="uni_enable_ai_censorship">是否开启评论和发帖AI审核</label>
+                            </th>
                             <td>
 								<?php
 								$uni_enable_ai_censorship = get_option('uni_enable_ai_censorship');
 								$is_uni_enable_ai_censorship = empty($uni_enable_ai_censorship) ? '' : 'checked';
-								echo '<input name="uni_enable_ai_censorship"  type="checkbox" ' . $is_uni_enable_ai_censorship . ' />';
+								echo '<input name="uni_enable_ai_censorship" id="uni_enable_ai_censorship"  type="checkbox" ' . $is_uni_enable_ai_censorship . ' />';
 								?>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">是否开启显示评论IP位置</th>
+                        <tr>
+                            <th scope="row"><label for="uni_show_comment_location">是否开启显示评论IP位置</label></th>
                             <td>
 								<?php
 								$uni_show_comment_location = get_option('uni_show_comment_location');
 								$is_uni_show_comment_location = empty($uni_show_comment_location) ? '' : 'checked';
-								echo '<input name="uni_show_comment_location"  type="checkbox" ' . $is_uni_show_comment_location . ' />';
+								echo '<input name="uni_show_comment_location" id="uni_show_comment_location" type="checkbox" ' . $is_uni_show_comment_location . ' />';
 								?>
                             </td>
                         </tr>
 
                     </table>
 
-                    <h3>默认图设置</h3>
+                    <h3 class="title">默认图设置</h3>
                     <table class="form-table">
-                        <tr valign="top">
-                            <th scope="row">小程序logo图片地址</th>
-                            <td><input type="text" name="uni_logo_imageurl" style="width: 100%; max-width: 300px;"
+                        <tr>
+                            <th scope="row"><label for="uni_logo_imageurl">小程序logo图片地址</label></th>
+                            <td><input type="text" name="uni_logo_imageurl" id="uni_logo_imageurl" class="regular-text"
                                        value="<?php echo esc_attr(get_option('uni_logo_imageurl')); ?>"/> <input
                                         id="uni_logo_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
@@ -177,46 +167,13 @@ function weixinapp_settings_page() {
 
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">分享默认图片地址</th>
-                            <td><input type="text" name="uni_share_imageurl" style="width: 100%; max-width: 300px;"
+                        <tr>
+                            <th scope="row"><label for="uni_share_imageurl">分享默认图片地址</label></th>
+                            <td><input type="text" name="uni_share_imageurl" id="uni_share_imageurl"
+                                       class="regular-text"
                                        value="<?php echo esc_attr(get_option('uni_share_imageurl')); ?>"/> <input
                                         id="uni_share_imageurl-btn" class="button im-upload" type="button"
                                         value="选择图片"/><br/>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <h3>推送设置</h3>
-                    <table class="form-table">
-
-                        <tr valign="top">
-                            <th scope="row">是否启用Uni Push 1.0</th>
-                            <td>
-                                <input name="uni_enable_uni_push"
-                                       type="checkbox" <?php echo get_option('uni_enable_uni_push') ? 'checked' : ''; ?> />
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">Uni Push AppID</th>
-                            <td><input type="text" name="uni_push_app_id" style="width: 100%; max-width: 300px;"
-                                       value="<?php echo esc_attr(get_option('uni_push_app_id')); ?>"/>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">Uni Push AppKey</th>
-                            <td><input type="text" name="uni_push_app_key" style="width: 100%; max-width: 300px;"
-                                       value="<?php echo esc_attr(get_option('uni_push_app_key')); ?>"/>
-                            </td>
-                        </tr>
-
-
-                        <tr valign="top">
-                            <th scope="row">Uni Push MasterSecret</th>
-                            <td><input type="text" name="uni_push_master_secret" style="width: 100%; max-width: 300px;"
-                                       value="<?php echo esc_attr(get_option('uni_push_master_secret')); ?>"/>
                             </td>
                         </tr>
                     </table>
@@ -224,165 +181,97 @@ function weixinapp_settings_page() {
 
                 <h2>微信小程序设置</h2>
                 <div class="section">
+                    <h3 class="title">基本设置</h3>
                     <table class="form-table">
-                        <tr valign="top">
-                            <th scope="row">AppID</th>
-                            <td><input type="text" name="wf_appid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_appid')); ?>"/>*
+                        <tr>
+                            <th scope="row"><label for="wf_appid">AppID</label></th>
+                            <td><input type="text" name="wf_appid" id="wf_appid" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('wf_appid')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">AppSecret</th>
-                            <td><input type="text" name="wf_secret" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_secret')); ?>"/>*
+                        <tr>
+                            <th scope="row"><label for="wf_secret">AppSecret</label></th>
+                            <td><input type="text" name="wf_secret" id="wf_secret" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('wf_secret')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">开启微信小程序的评论</th>
+                        <tr>
+                            <th scope="row"><label for="uni_enable_weixin_comment_option">开启微信小程序的评论</label>
+                            </th>
                             <td>
 								<?php
 								$uni_enable_weixin_comment_option = get_option('uni_enable_weixin_comment_option');
 								$checkbox = empty($uni_enable_weixin_comment_option) ? '' : 'checked';
-								echo '<input name="uni_enable_weixin_comment_option"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								echo '<input name="uni_enable_weixin_comment_option" id="uni_enable_weixin_comment_option" type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">小程序是否是企业主体</th>
+                        <tr>
+                            <th scope="row"><label for="uni_weixin_enterprise_minapp">小程序是否是企业主体</label></th>
                             <td>
 								<?php
 								$uni_weixin_enterprise_minapp = get_option('uni_weixin_enterprise_minapp');
 								$checkbox = empty($uni_weixin_enterprise_minapp) ? '' : 'checked';
-								echo '<input name="uni_weixin_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
+								echo '<input name="uni_weixin_enterprise_minapp" id="uni_weixin_enterprise_minapp" type="checkbox" value="1" ' . $checkbox . ' />';
+								?>
+                                <p style="color: #959595; display:inline">* 企业主体小程序会启用webview功能</p>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">开启文章列表广告</th>
+                    </table>
+
+                    <h3 class="title">推送设置</h3>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><label for="uni_enable_weixin_push">是否启用一次性订阅消息</label>
+                            </th>
                             <td>
-								<?php
-								$wf_list_ad = get_option('wf_list_ad');
-								$checkbox = empty($wf_list_ad) ? '' : 'checked';
-								echo '<input name="wf_list_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_list_ad_id"
-                                                                            style="width:300px; height:40px"
-                                                                            value="<?php echo esc_attr(get_option('wf_list_ad_id')); ?>"/>
-                                <br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;每<input
-                                        type="number" name="wf_list_ad_every" style="width:40px; height:40px"
-                                        value="<?php echo esc_attr(get_option('wf_list_ad_every')); ?>"/>条列表展示一条广告<br/>
-                                <p style="color: #959595; display:inline">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;请输入整数,否则无法正常展示广告</p>
-                            </td>
+                                <input name="uni_enable_weixin_push" id="uni_enable_weixin_push"
+                                       type="checkbox" <?php echo get_option('uni_enable_weixin_push') ? 'checked' : ''; ?> />
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">开启内容详情页广告</th>
-                            <td>
-
-								<?php
-								$wf_detail_ad = get_option('wf_detail_ad');
-								$checkbox = empty($wf_detail_ad) ? '' : 'checked';
-								echo '<input name="wf_detail_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;&emsp;&emsp;Banner广告id:&emsp;<input type="text" name="wf_detail_ad_id"
-                                                                            style="width:300px; height:40px"
-                                                                            value="<?php echo esc_attr(get_option('wf_detail_ad_id')); ?>"/>
+                        <tr>
+                            <th scope="row"><label for="uni_weixin_comment_template_id">新评论提醒模版ID</label></th>
+                            <td><input type="text" name="uni_weixin_comment_template_id"
+                                       id="uni_weixin_comment_template_id" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_weixin_comment_template_id')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
-                            <th scope="row">激励视频广告id</th>
-                            <td>
-                                <input type="text" name="wf_excitation_ad_id" style="width:300px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_excitation_ad_id')); ?>"/>
+                        <tr>
+                            <th scope="row"><label for="uni_weixin_comment_reply_template_id">评论回复通知模版ID</label>
+                            </th>
+                            <td><input type="text" name="uni_weixin_comment_reply_template_id"
+                                       id="uni_weixin_comment_reply_template_id" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_weixin_comment_reply_template_id')); ?>"/>
                             </td>
                         </tr>
-
-                        <tr valign="top">
-                            <th scope="row">视频广告id</th>
-                            <td>
-                                <input type="text" name="wf_video_ad_id" style="width:300px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_video_ad_id')); ?>"/>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">插屏广告id</th>
-                            <td>
-                                <input type="text" name="wf_interstitial_ad_id" style="width:300px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_interstitial_ad_id')); ?>"/>
-                            </td>
-                        </tr>
-
-                        <tr valign="top">
-                            <th scope="row">启动插屏广告的页面</th>
-                            <td>
-								<?php
-								$enable_index_interstitial_ad = get_option('enable_index_interstitial_ad');
-								$checkbox = empty($enable_index_interstitial_ad) ? '' : 'checked';
-								echo '首页<input name="enable_index_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;
-								<?php
-								$enable_detail_interstitial_ad = get_option('enable_detail_interstitial_ad');
-								$checkbox = empty($enable_detail_interstitial_ad) ? '' : 'checked';
-								echo '文章详情页<input name="enable_detail_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-
-                                &emsp;
-								<?php
-								$enable_topic_interstitial_ad = get_option('enable_topic_interstitial_ad');
-								$checkbox = empty($enable_topic_interstitial_ad) ? '' : 'checked';
-								echo '专题(分类)页<input name="enable_topic_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;
-								<?php
-								$enable_list_interstitial_ad = get_option('enable_list_interstitial_ad');
-								$checkbox = empty($enable_list_interstitial_ad) ? '' : 'checked';
-								echo '专题(分类)文章列表页 &emsp;<input name="enable_list_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;
-								<?php
-								$enable_hot_interstitial_ad = get_option('enable_hot_interstitial_ad');
-								$checkbox = empty($enable_hot_interstitial_ad) ? '' : 'checked';
-								echo '排行页<input name="enable_hot_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-                                &emsp;
-								<?php
-								$enable_comments_interstitial_ad = get_option('enable_comments_interstitial_ad');
-								$checkbox = empty($enable_comments_interstitial_ad) ? '' : 'checked';
-								echo '最新评论页<input name="enable_comments_interstitial_ad"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?>
-
-                            </td>
-                        </tr>
-
                     </table>
                 </div>
 
                 <h2>QQ小程序设置</h2>
                 <div class="section">
                     <table class="form-table">
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppID</th>
-                            <td><input type="text" name="wf_qq_appid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_qq_appid')); ?>"/>*
+                            <td><input type="text" name="wf_qq_appid" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('wf_qq_appid')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppSecret</th>
-                            <td><input type="text" name="wf_qq_secret" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('wf_qq_secret')); ?>"/>*
+                            <td><input type="text" name="wf_qq_secret" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('wf_qq_secret')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">开启QQ小程序的评论</th>
                             <td>
 								<?php
@@ -393,14 +282,14 @@ function weixinapp_settings_page() {
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">小程序是否是企业主体</th>
                             <td>
 								<?php
 								$uni_qq_enterprise_minapp = get_option('uni_qq_enterprise_minapp');
 								$checkbox = empty($uni_qq_enterprise_minapp) ? '' : 'checked';
 								echo '<input name="uni_qq_enterprise_minapp"  type="checkbox"  value="1" ' . $checkbox . ' />';
-								?><p style="color: #959595; display:inline">* 如果是企业主体的小程序，请勾选</p>
+								?><p style="color: #959595; display:inline">* 企业主体小程序会启用webview功能</p>
                             </td>
                         </tr>
                     </table>
@@ -409,21 +298,21 @@ function weixinapp_settings_page() {
                 <h2>头条小程序设置</h2>
                 <div class="section">
                     <table class="form-table">
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppID</th>
-                            <td><input type="text" name="uni_bytedance_appid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_bytedance_appid')); ?>"/>*
+                            <td><input type="text" name="uni_bytedance_appid" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_bytedance_appid')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppSecret</th>
-                            <td><input type="text" name="uni_bytedance_secret" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_bytedance_secret')); ?>"/>*
+                            <td><input type="text" name="uni_bytedance_secret" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_bytedance_secret')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">开启头条小程序的评论</th>
                             <td>
 								<?php
@@ -440,28 +329,28 @@ function weixinapp_settings_page() {
                 <h2>百度小程序设置</h2>
                 <div class="section">
                     <table class="form-table">
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppID</th>
-                            <td><input type="text" name="uni_baidu_appid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_baidu_appid')); ?>"/>*
+                            <td><input type="text" name="uni_baidu_appid" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_appid')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppSecret</th>
-                            <td><input type="text" name="uni_baidu_secret" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_baidu_secret')); ?>"/>*
+                            <td><input type="text" name="uni_baidu_secret" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_secret')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppKey</th>
-                            <td><input type="text" name="uni_baidu_key" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_baidu_key')); ?>"/>*
+                            <td><input type="text" name="uni_baidu_key" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_baidu_key')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">开启百度小程序的评论</th>
                             <td>
 								<?php
@@ -478,28 +367,28 @@ function weixinapp_settings_page() {
                 <h2>支付宝小程序设置</h2>
                 <div class="section">
                     <table class="form-table">
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">AppID</th>
-                            <td><input type="text" name="uni_alipay_appid" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_alipay_appid')); ?>"/>*
+                            <td><input type="text" name="uni_alipay_appid" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_alipay_appid')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">应用私钥</th>
-                            <td><textarea name="uni_alipay_private_secret" style="width:400px"
-                                ><?php echo esc_attr(get_option('uni_alipay_private_secret')); ?></textarea>*
+                            <td><textarea name="uni_alipay_private_secret" class="large-text"
+                                ><?php echo esc_attr(get_option('uni_alipay_private_secret')); ?></textarea>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">支付宝公钥</th>
-                            <td><textarea name="uni_alipay_public_secret" style="width:400px"
-                                ><?php echo esc_attr(get_option('uni_alipay_public_secret')); ?></textarea>*
+                            <td><textarea name="uni_alipay_public_secret" class="large-text"
+                                ><?php echo esc_attr(get_option('uni_alipay_public_secret')); ?></textarea>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row">开启支付宝小程序的评论</th>
                             <td>
 								<?php
@@ -515,95 +404,150 @@ function weixinapp_settings_page() {
 
                 <h2>APP设置</h2>
                 <div class="section">
+                    <h3 class="title">基本设置</h3>
+
                     <table class="form-table">
-                        <tr valign="top">
+                        <tr>
                             <th scope="row"><label for="uni_app_updated_version">APP版本名称</label></th>
-                            <td><input type="text" name="uni_app_updated_version" style="width:400px; height:40px"
+                            <td><input type="text" name="uni_app_updated_version" class="regular-text"
                                        id="uni_app_updated_version"
-                                       value="<?php echo esc_attr(get_option('uni_app_updated_version')); ?>"/>
-                                <p style="color: #959595; display:inline">*版本名称用于用户端显示，形式类似于"1.2.0"</p>
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_version')); ?>"
+                                       placeholder="版本名称用于用户端显示，形式类似于1.2.0"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row"><label for="uni_app_updated_version_code">APP版本号</label></th>
                             <td><input type="number" name="uni_app_updated_version_code"
-                                       style="width:400px; height:40px"
+                                       class="regular-text"
                                        id="uni_app_updated_version_code"
-                                       value="<?php echo esc_attr(get_option('uni_app_updated_version_code')); ?>"/>
-                                <p style="color: #959595; display:inline">
-                                    *版本号用于开发者区分，请使用纯数字表示，形式类似于"120"</p>
+                                       value="<?php echo esc_attr(get_option('uni_app_updated_version_code')); ?>"
+                                       placeholder="版本号用于开发者区分，请使用纯数字表示，形式类似于120"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
+                            <th scope="row"><label for="uni_app_android_package_name">APP Android版本包名</label></th>
+                            <td><input type="text" name="uni_app_android_package_name" id="uni_app_android_package_name"
+                                       class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_app_android_package_name')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <th scope="row"><label for="uni_app_updated_download_link">安卓APP更新链接</label></th>
                             <td>
-                                <input style="width:400px; height:40px"
+                                <input type="text" class="regular-text"
                                        name="uni_app_updated_download_link"
                                        id="uni_app_updated_download_link"
                                        value="<?php echo esc_attr(get_option('uni_app_updated_download_link')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row"><label for="uni_app_updated_ios_download_link">iOS APP应用商店地址</label>
                             </th>
                             <td>
-                                <input style="width:400px; height:40px"
+                                <input type="text" class="regular-text"
                                        name="uni_app_updated_ios_download_link"
                                        id="uni_app_updated_ios_download_link"
                                        value="<?php echo esc_attr(get_option('uni_app_updated_ios_download_link')); ?>"/>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row"><label for="uni_app_force_update">是否强制更新</label></th>
                             <td>
 								<?php
 								$uni_app_force_update = get_option('uni_app_force_update');
 								$checkbox = empty($uni_app_force_update) ? '' : 'checked';
-								echo '<input name="uni_app_force_update"  type="checkbox"  value="1" ' . $checkbox . ' />';
+								echo '<input name="uni_app_force_update" id="uni_app_force_update" type="checkbox"  value="1" ' . $checkbox . ' />';
 								?>
                             </td>
                         </tr>
 
-                        <tr valign="top">
+                        <tr>
                             <th scope="row"><label for="uni_app_updated_log">APP更新日志</label></th>
-                            <td><textarea type="text" name="uni_app_updated_log"
-                                          style="width:400px"
+                            <td><textarea name="uni_app_updated_log"
                                           id="uni_app_updated_log"
-                                          cols="60"
+                                          class="large-text"
                                           rows="10"
                                 ><?php echo esc_attr(get_option('uni_app_updated_log')); ?></textarea>
                             </td>
                         </tr>
+
+                    </table>
+
+
+                    <h3 class="title">推送设置</h3>
+                    <table class="form-table">
+
+                        <tr>
+                            <th scope="row"><label for="uni_enable_uni_push">是否启用Uni Push 1.0</label></th>
+                            <td>
+                                <input name="uni_enable_uni_push" id="uni_enable_uni_push"
+                                       type="checkbox" <?php echo get_option('uni_enable_uni_push') ? 'checked' : ''; ?> />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="uni_push_app_id">Uni Push AppID</label></th>
+                            <td><input type="text" name="uni_push_app_id" id="uni_push_app_id" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_push_app_id')); ?>"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><label for="uni_push_app_key">Push AppKey</label></th>
+                            <td><input type="text" name="uni_push_app_key" id="uni_push_app_key" class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_push_app_key')); ?>"/>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th scope="row"><label for="uni_push_master_secret">Uni Push MasterSecret</label></th>
+                            <td><input type="text" name="uni_push_master_secret" id="uni_push_master_secret"
+                                       class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_push_master_secret')); ?>"/>
+                            </td>
+                        </tr>
+
                     </table>
                 </div>
 
                 <h2>H5设置</h2>
                 <div class="section">
+                    <h3 class="title">基本设置</h3>
+
                     <table class="form-table">
-                        <tr valign="top">
-                            <th scope="row">H5 QQ互联登录ClientID</th>
-                            <td><input type="text" name="uni_h5_qq_client_id" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_h5_qq_client_id')); ?>"/>
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">H5 QQ互联回调地址</th>
-                            <td><input type="text" name="uni_h5_qq_callback_url" style="width:400px; height:40px"
-                                       value="<?php echo esc_attr(get_option('uni_h5_qq_callback_url')); ?>"/>
-                            </td>
-                        </tr>
-                        <tr valign="top">
-                            <th scope="row">开启H5的评论和发帖</th>
+                        <tr>
+                            <th scope="row"><label for="uni_enable_h5_comment_option">开启H5的评论和发帖</label></th>
                             <td>
 								<?php
 								$uni_enable_h5_comment_option = get_option('uni_enable_h5_comment_option');
 								$checkbox = empty($uni_enable_h5_comment_option) ? '' : 'checked';
-								echo '<input name="uni_enable_h5_comment_option" type="checkbox"  value="true" ' . $checkbox . ' />';
+								echo '<input name="uni_enable_h5_comment_option" id="uni_enable_h5_comment_option" type="checkbox"  value="true" ' . $checkbox . ' />';
 								?>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h3 class="title">QQ互联</h3>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><label for="uni_h5_qq_client_id">H5 QQ互联登录ClientID</label></th>
+                            <td><input type="text" name="uni_h5_qq_client_id" id="uni_h5_qq_client_id"
+                                       class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_h5_qq_client_id')); ?>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="uni_h5_qq_callback_url">H5 QQ互联回调地址</label></th>
+                            <td><input type="text" name="uni_h5_qq_callback_url" id="uni_h5_qq_callback_url"
+                                       class="regular-text"
+                                       value="<?php echo esc_attr(get_option('uni_h5_qq_callback_url')); ?>"/>
                             </td>
                         </tr>
                     </table>

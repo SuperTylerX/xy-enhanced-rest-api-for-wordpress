@@ -65,6 +65,9 @@ class RAM_REST_Options_Controller extends WP_REST_Controller {
 		$result["uni_weixin_enterprise_minapp"] = !empty(get_option('uni_weixin_enterprise_minapp'));
 		$result["uni_qq_enterprise_minapp"] = !empty(get_option('uni_qq_enterprise_minapp'));
 		$result["is_user_registration_enable"] = get_option('users_can_register') === "1";
+		$result["uni_enable_weixin_push"] = !empty(get_option("uni_enable_weixin_push"));
+		$result["uni_weixin_comment_template_id"] = get_option("uni_weixin_comment_template_id") ?? '';
+		$result["uni_weixin_comment_reply_template_id"] = get_option("uni_weixin_comment_reply_template_id") ?? '';
 
 		return rest_ensure_response($result);
 	}

@@ -1,12 +1,10 @@
 <?php
 
-$PackageName = 'com.supertyler.xy';
-
 // 收到文章评论，给文章作者推送消息，点击通知后，会跳转到文章详情页
 add_action('wp_insert_comment', 'send_push_notification_on_new_comment', 10, 2);
 
 function send_push_notification_on_new_comment($comment_id, $comment_object) {
-	global $PackageName;
+	$PackageName = get_option('uni_app_android_package_name');
 
 	$post_id = $comment_object->comment_post_ID;
 	// 获取文章作者的ID
@@ -52,7 +50,7 @@ function send_push_notification_on_new_comment($comment_id, $comment_object) {
 add_action('wp_insert_comment', 'send_push_notification_on_new_reply', 10, 2);
 
 function send_push_notification_on_new_reply($comment_id, $comment_object) {
-	global $PackageName;
+	$PackageName = get_option('uni_app_android_package_name');
 
 	$parent_comment_id = $comment_object->comment_parent;
 	$parent_comment = get_comment($parent_comment_id);
