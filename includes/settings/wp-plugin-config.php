@@ -34,11 +34,6 @@ function register_uni_app_settings() {
 	// 默认图配置
 	register_setting('uniapp-group', 'uni_logo_imageurl');
 	register_setting('uniapp-group', 'uni_share_imageurl');
-	// Uni Push 设置
-	register_setting('uniapp-group', 'uni_enable_uni_push');
-	register_setting('uniapp-group', 'uni_push_app_id');
-	register_setting('uniapp-group', 'uni_push_app_key');
-	register_setting('uniapp-group', 'uni_push_master_secret');
 
 	/** 微信小程序设置 **/
 	register_setting('uniapp-group', 'wf_appid');
@@ -88,6 +83,12 @@ function register_uni_app_settings() {
 	register_setting('uniapp-group', 'uni_app_updated_ios_download_link');
 	register_setting('uniapp-group', 'uni_app_force_update');
 	register_setting('uniapp-group', 'uni_app_android_package_name');
+
+	// Uni Push 设置
+	register_setting('uniapp-group', 'uni_enable_uni_push');
+	register_setting('uniapp-group', 'uni_push_app_id');
+	register_setting('uniapp-group', 'uni_push_app_key');
+	register_setting('uniapp-group', 'uni_push_master_secret');
 
 }
 
@@ -485,8 +486,11 @@ function uni_app_settings_page() {
                         <tr>
                             <th scope="row"><label for="uni_enable_uni_push">是否启用Uni Push 1.0</label></th>
                             <td>
-                                <input name="uni_enable_uni_push" id="uni_enable_uni_push"
-                                       type="checkbox" <?php echo get_option('uni_enable_uni_push') ? 'checked' : ''; ?> />
+								<?php
+								$uni_enable_uni_push = get_option('uni_enable_uni_push');
+								$checkbox = empty($uni_enable_uni_push) ? '' : 'checked';
+								echo '<input name="uni_enable_uni_push" id="uni_enable_uni_push" type="checkbox" value="1" ' . $checkbox . ' />';
+								?>
                             </td>
                         </tr>
 

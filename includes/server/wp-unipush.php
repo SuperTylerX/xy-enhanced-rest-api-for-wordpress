@@ -1,8 +1,13 @@
 <?php
+//禁止直接访问
+if (!defined('ABSPATH')) exit;
+
+if (!empty(get_option('uni_enable_uni_push'))) {
+	add_action('wp_insert_comment', 'send_push_notification_on_new_comment', 10, 2);
+	add_action('wp_insert_comment', 'send_push_notification_on_new_reply', 10, 2);
+}
 
 // 收到文章评论，给文章作者推送消息，点击通知后，会跳转到文章详情页
-add_action('wp_insert_comment', 'send_push_notification_on_new_comment', 10, 2);
-
 function send_push_notification_on_new_comment($comment_id, $comment_object) {
 	$PackageName = get_option('uni_app_android_package_name');
 
@@ -45,10 +50,7 @@ function send_push_notification_on_new_comment($comment_id, $comment_object) {
 	}
 }
 
-
 // 收到评论回复，给评论作者推送消息，点击通知后，会跳转到文章详情页
-add_action('wp_insert_comment', 'send_push_notification_on_new_reply', 10, 2);
-
 function send_push_notification_on_new_reply($comment_id, $comment_object) {
 	$PackageName = get_option('uni_app_android_package_name');
 
@@ -97,7 +99,6 @@ function send_push_notification_on_new_reply($comment_id, $comment_object) {
 		}
 	}
 }
-
 
 function send_push_notification($cid, $title, $msg, $clickType, $intent) {
 	$push = new GTPushRequest();

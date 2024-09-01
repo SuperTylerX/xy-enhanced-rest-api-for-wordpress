@@ -21,7 +21,7 @@ require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/vendor/ipip/City.php
 
 //引入个推SDK
 require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/vendor/getui-pushapi-php-client-v2/GTClient.php');
-require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/settings/wp-unipush.php');
+require_once(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/server/wp-unipush.php');
 
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-util.php');
 include(REST_API_TO_MINIPROGRAM_PLUGIN_DIR . 'includes/ram-api.php');
